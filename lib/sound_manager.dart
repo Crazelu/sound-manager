@@ -1,0 +1,1 @@
+export 'package:sound_manager/src/sound_manager.dart';
