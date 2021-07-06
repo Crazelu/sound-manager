@@ -41,9 +41,12 @@ public class AudioRecorderUtils {
     }
 
     public void recordAudio(Context context, String filePath) {
+
         //TODO: Provide parameter to allow customization of storage directory
         final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
         String fileName = Environment.getExternalStorageDirectory().getPath() + cacheDir;
+
+
         if(filePath == null){
 
             filePath = "VN_"+System.currentTimeMillis();
@@ -104,6 +107,7 @@ public class AudioRecorderUtils {
     public void saveRecording(){
         try{
             recorder.stop();
+            recorder.reset();
             recorder.release();
             recorder = null;
         }catch(Exception e){
