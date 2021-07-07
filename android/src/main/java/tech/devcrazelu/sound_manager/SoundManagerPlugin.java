@@ -119,7 +119,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioPlayerUtils.seek(milliseconds);
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+     throw e;
 
       }
       return null;
@@ -136,13 +136,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "AudioPlayerSeekError", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "AudioPlayerSeekError", e.toString());
     }
   }
 
@@ -160,7 +163,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioPlayerUtils.setLooping(shouldLoop);
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+       throw e;
       }
       return null;
     }
@@ -176,13 +179,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "AudioPlayerLoopingError", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "AudioPlayerLoopingError", e.toString());
     }
   }
 
@@ -199,7 +205,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioPlayerUtils.pauseAudio();
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+       throw e;
       }
       return null;
     }
@@ -215,13 +221,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "AudioPlayerPauseError", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "AudioPlayerPauseError", e.toString());
     }
   }
 
@@ -238,7 +247,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioPlayerUtils.stopAudio();
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+        throw e;
       }
       return null;
     }
@@ -254,13 +263,17 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "AudioPlayerStopError", e.toString());
+
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "AudioPlayerStopError", e.toString());
     }
   }
 
@@ -283,7 +296,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioPlayerUtils.playAudio(filePath, context, isFullPath);
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+       throw e;
       }
       return null;
     }
@@ -299,13 +312,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "AudioPlaybackError", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "AudioPlaybackError error", e.toString());
     }
   }
 
@@ -321,7 +337,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioRecorderUtils.saveRecording();
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+        throw e;
       }
       return null;
     }
@@ -337,13 +353,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "SaveAudioRecording error", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "SaveAudioRecording error", e.toString());
     }
   }
 
@@ -359,7 +378,8 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioRecorderUtils.resumeRecordingAudio();
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+
+        throw e;
       }
       return null;
     }
@@ -375,13 +395,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "ResumeRecordingAudio error", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "ResumeRecordingAudio error", e.toString());
     }
   }
 
@@ -396,7 +419,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       try {
         audioRecorderUtils.pauseRecording();
       }catch (Exception e){
-        Log.d(TAG, e.toString());
+        throw e;
       }
       return null;
     }
@@ -412,13 +435,16 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       while(true){
         try{
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "PauseRecordingAudio error", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "PauseRecordingAudio error", e.toString());
     }
   }
 
@@ -433,17 +459,17 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
     @Override
     public Boolean call() {
+
       try {
         if (audioRecorderUtils.doesAppHavePermission(context)) {
           audioRecorderUtils.recordAudio(context, null);
           return true;
-        } else {
-          return false;
         }
-      }catch (Exception e){
-        Log.d(TAG, e.toString());
         return false;
+      }catch(Exception e){
+        throw e;
       }
+
     }
   }
 
@@ -461,13 +487,15 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
         try{
           if(futureTask.isDone()){
             if(futureTask.get() == true) result.success(true);
-            else result.error("SoundManager","An error occurred. Have you requested permission", null);
+            else result.error(TAG,"An error occurred. Verify that you have requested permission", null);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "RecordAudio error", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "RecordAudio error", e.toString());
     }
   }
 
@@ -482,14 +510,14 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       this.audioRecorderUtils = audioRecorderUtils;
     }
     @Override
-    public Void call(){
-      try {
-        audioRecorderUtils.handlePermissionTask(context, activity);
-        return null;
-      }catch(Exception e){
-        Log.d(TAG, e.toString());
-        return null;
-      }
+    public Void call() {
+        try {
+          audioRecorderUtils.handlePermissionTask(context, activity);
+          return null;
+        }catch(Exception e){
+          throw e;
+        }
+
     }
   }
 
@@ -508,14 +536,18 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
       while(true){
         try{
+
           if(futureTask.isDone()){
+            futureTask.get();
             result.success(true);
           }
         }catch (Exception e){
           Log.d(TAG, e.toString());
+          result.error(TAG, "Permission error", e.toString());
         }
       }}catch(Exception e){
       Log.d(TAG, e.toString());
+      result.error(TAG, "Permission error", e.toString());
     }
 
   }

@@ -17,7 +17,11 @@ public class AudioRecorderUtils {
     private MediaRecorder recorder ;
     private static String TAG = "SoundManager";
 
-    AudioRecorderUtils(){this.recorder = new MediaRecorder();}
+    private String audioRecordingFilePath = "path";
+
+    AudioRecorderUtils(){
+        this.recorder = new MediaRecorder();
+    }
 
     public void handlePermissionTask(Context context, Activity activity){
         if(!doesAppHavePermission(context)){
