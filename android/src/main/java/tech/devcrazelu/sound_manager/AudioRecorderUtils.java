@@ -15,9 +15,9 @@ import java.io.IOException;
 public class AudioRecorderUtils {
 
     private MediaRecorder recorder ;
-    private static String TAG = "SoundManager";
+    private static final String TAG = "SoundManager";
 
-    private String audioRecordingFilePath = "path";
+    private String audioRecordingFilePath = "";
 
     AudioRecorderUtils(){
         this.recorder = new MediaRecorder();
@@ -44,7 +44,7 @@ public class AudioRecorderUtils {
         }
     }
 
-    public void recordAudio(Context context, String filePath) {
+    public void recordAudio(Context context, String filePath) throws IOException {
 
         //TODO: Provide parameter to allow customization of storage directory
         final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
@@ -55,7 +55,7 @@ public class AudioRecorderUtils {
 
             filePath = "VN_"+System.currentTimeMillis();
         }
-        fileName +=  filePath + ".3gp";
+        this.audioRecordingFilePath = fileName +  filePath + ".3gp";
 
 
         try{
@@ -65,17 +65,19 @@ public class AudioRecorderUtils {
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            recorder.setOutputFile(fileName);
+            recorder.setOutputFile(audioRecordingFilePath);
 
             try{
                 recorder.prepare();
             }catch(IOException e){
                 Log.d(TAG, e.toString());
+                throw e;
             }
 
             recorder.start();
         }catch(Exception e){
             Log.d(TAG, e.toString());
+            throw e;
         }
 
     }
@@ -91,7 +93,9 @@ public class AudioRecorderUtils {
                 recorder.resume();
             }
         }catch(Exception e){
-            Log.d(TAG, e.toString());}
+            Log.d(TAG, e.toString());
+            throw e;
+        }
 
     }
 
@@ -104,7 +108,9 @@ public class AudioRecorderUtils {
                 recorder.pause();
             }
         }catch(Exception e){
-            Log.d(TAG, e.toString());}
+            Log.d(TAG, e.toString());
+            throw e;
+        }
 
     }
 
@@ -114,8 +120,11 @@ public class AudioRecorderUtils {
             recorder.reset();
             recorder.release();
             recorder = null;
+            this.audioRecordingFilePath = "";
         }catch(Exception e){
-            Log.d(TAG, e.toString());}
+            Log.d(TAG, e.toString());
+            throw e;
+        }
 
     }
 }
