@@ -2,10 +2,12 @@ package tech.devcrazelu.sound_manager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +20,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** SoundManagerPlugin */
@@ -37,11 +40,6 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     context = flutterPluginBinding.getApplicationContext();
   }
 
-
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    channel.setMethodCallHandler(new SoundManagerPlugin());
-  }
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result rawResult) {
@@ -458,7 +456,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       this.audioRecorderUtils = recorderUtils;
     }
     @Override
-    public Boolean call() {
+    public Boolean call() throws IOException {
 
       try {
         if (audioRecorderUtils.doesAppHavePermission(context)) {
@@ -571,6 +569,23 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+    binding.addRequestPermissionsResultListener(
+            new PluginRegistry.RequestPermissionsResultListener() {
+      @Override
+      public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+          case AudioRecorderUtils.PERMISSION_REQUEST_CODE:
+            for (int i = 0; i < grantResults.length; i++) {
+              if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+
+              }
+            }
+
+        }
+        return false;
+      }
+    });
     activity = binding.getActivity();
   }
 

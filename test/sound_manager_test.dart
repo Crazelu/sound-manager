@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'file:///C:/projects/sound_manager/lib/src/sound_manager.dart';
+import 'package:sound_manager/sound_manager.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('sound_manager');

@@ -16,6 +16,7 @@ public class AudioRecorderUtils {
 
     private MediaRecorder recorder ;
     private static final String TAG = "SoundManager";
+    public static final int PERMISSION_REQUEST_CODE = 3;
 
     private String audioRecordingFilePath = "";
 
@@ -27,7 +28,7 @@ public class AudioRecorderUtils {
         if(!doesAppHavePermission(context)){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.RECORD_AUDIO}, 3);
+                ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_CODE);
             }
 
         }
