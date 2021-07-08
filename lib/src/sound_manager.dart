@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:sound_manager/src/utils/utils.dart';
 
 class SoundManager {
   static const MethodChannel _channel = const MethodChannel('sound_manager');
@@ -17,7 +18,10 @@ class SoundManager {
   //sound recording
 
   ///Starts recording audio
-  static Future<bool> record({String? fileName}) async {
+  static Future<bool> record({
+    String? fileName,
+    OutputFormat outputFormat = OutputFormat.three_gpp,
+  }) async {
     return await _channel.invokeMethod("recordAudio", {"fileName": fileName});
   }
 
