@@ -34,7 +34,7 @@ public class AudioRecorderUtils {
         }
     }
 
-    public boolean doesAppHavePermission(Context context){
+    public boolean doesAppHavePermission(Context context) {
         try{
             String audioRecordingPermission = Manifest.permission.RECORD_AUDIO;
             int audioRecordingPermissionPermissionStatus = context.checkCallingOrSelfPermission(audioRecordingPermission);
@@ -45,7 +45,7 @@ public class AudioRecorderUtils {
         }
     }
 
-    public void recordAudio(Context context, String filePath) throws IOException {
+    public void recordAudio(Context context, String filePath) throws Exception {
 
         //TODO: Provide parameter to allow customization of storage directory
         final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
@@ -76,6 +76,7 @@ public class AudioRecorderUtils {
             }
 
             recorder.start();
+            Log.d(TAG, "Recording started. Audio file to be saved at "+audioRecordingFilePath);
         }catch(Exception e){
             Log.d(TAG, e.toString());
             throw e;
@@ -92,6 +93,7 @@ public class AudioRecorderUtils {
             if(recorder == null) return;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 recorder.resume();
+                Log.d(TAG, "Recording resumed");
             }
         }catch(Exception e){
             Log.d(TAG, e.toString());
@@ -107,6 +109,7 @@ public class AudioRecorderUtils {
             if(recorder == null) return;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 recorder.pause();
+                Log.d(TAG, "Recording paused");
             }
         }catch(Exception e){
             Log.d(TAG, e.toString());
@@ -122,6 +125,7 @@ public class AudioRecorderUtils {
             recorder.release();
             recorder = null;
             this.audioRecordingFilePath = "";
+            Log.d(TAG, "Saved recording and released resources");
         }catch(Exception e){
             Log.d(TAG, e.toString());
             throw e;

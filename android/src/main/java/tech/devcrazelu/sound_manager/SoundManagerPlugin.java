@@ -70,22 +70,22 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
         break;
 
       case PAUSE_RECORDING:
-        runPauseRecordingTask(result, audioRecorderUtils);
+        new SoundManagerPluginUtils.Task(null,null, result, new Callables.PauseAudioRecordingCallable(), audioRecorderUtils).execute();
         break;
 
       case RESUMING_RECORDING:
-        runResumeAudioRecordingTask(result, audioRecorderUtils);
+        new SoundManagerPluginUtils.Task(null,null, result, new Callables.ResumeRecordingCallable(), audioRecorderUtils).execute();
         break;
 
       case SAVE_RECORDING:
-        runSaveRecordingTask(result, audioRecorderUtils);
+        new SoundManagerPluginUtils.Task(null,null, result, new Callables.SaveRecordingCallable(), audioRecorderUtils).execute();
         break;
 
       case PLAY_AUDIO:
         boolean isFullPath = call.argument("isFullPath");
         String filePath = call.argument("filePath");
 
-        runPlayAudioFileTask( result, audioPlayerUtils, filePath, context, isFullPath);
+        new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(filePath, isFullPath), audioPlayerUtils).execute();
         break;
 
       case PAUSE_AUDIO:
@@ -284,183 +284,6 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       result.error(TAG, "AudioPlayerStopError", e.toString());
     }
   }
-
-
-  private static class PlayAudioCallable implements Callable<Void> {
-
-    private AudioPlayerUtils audioPlayerUtils;
-    private String filePath;
-    private boolean isFullPath;
-    private Context context;
-
-    public  PlayAudioCallable(AudioPlayerUtils audioPlayerUtils, String filePath, Context context, boolean isFullPath){
-      this.audioPlayerUtils = audioPlayerUtils;
-      this.filePath = filePath;
-      this.context = context;
-      this.isFullPath = isFullPath;
-    }
-    @Override
-    public Void call() {
-      try {
-        audioPlayerUtils.playAudio(filePath, context, isFullPath);
-      }catch (Exception e){
-       throw e;
-      }
-      return null;
-    }
-  }
-
-  private void  runPlayAudioFileTask(Result result, AudioPlayerUtils audioPlayerUtils, String filePath, Context context, boolean isFullPath) {
-    try{
-      PlayAudioCallable playAudioFileTask = new PlayAudioCallable(audioPlayerUtils, filePath, context, isFullPath);
-      FutureTask<Void> futureTask = new FutureTask<>(playAudioFileTask);
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(futureTask);
-
-      while(true){
-        try{
-          if(futureTask.isDone()){
-            futureTask.get();
-            result.success(true);
-          }
-        }catch (Exception e){
-          Log.d(TAG, e.toString());
-          result.error(TAG, "AudioPlaybackError", e.toString());
-        }
-      }}catch(Exception e){
-      Log.d(TAG, e.toString());
-      result.error(TAG, "AudioPlaybackError error", e.toString());
-    }
-  }
-
-  private static class SaveRecordingCallable implements Callable<Void> {
-
-   private AudioRecorderUtils audioRecorderUtils;
-
-    public  SaveRecordingCallable( AudioRecorderUtils recorderUtils){
-      this.audioRecorderUtils = recorderUtils;
-    }
-    @Override
-    public Void call() {
-      try {
-        audioRecorderUtils.saveRecording();
-      }catch (Exception e){
-        throw e;
-      }
-      return null;
-    }
-  }
-
-  private void  runSaveRecordingTask(Result result,AudioRecorderUtils audioRecorderUtils) {
-    try{
-      SaveRecordingCallable saveAudioRecordingTask = new SaveRecordingCallable(audioRecorderUtils);
-      FutureTask<Void> futureTask = new FutureTask<>(saveAudioRecordingTask);
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(futureTask);
-
-      while(true){
-        try{
-          if(futureTask.isDone()){
-            futureTask.get();
-            result.success(true);
-          }
-        }catch (Exception e){
-          Log.d(TAG, e.toString());
-          result.error(TAG, "SaveAudioRecording error", e.toString());
-        }
-      }}catch(Exception e){
-      Log.d(TAG, e.toString());
-      result.error(TAG, "SaveAudioRecording error", e.toString());
-    }
-  }
-
-  private static class ResumeRecordingCallable implements Callable<Void> {
-
-   private AudioRecorderUtils audioRecorderUtils;
-
-    public  ResumeRecordingCallable(AudioRecorderUtils recorderUtils){
-      this.audioRecorderUtils = recorderUtils;
-    }
-    @Override
-    public Void call() {
-      try {
-        audioRecorderUtils.resumeRecordingAudio();
-      }catch (Exception e){
-
-        throw e;
-      }
-      return null;
-    }
-  }
-
-  private void  runResumeAudioRecordingTask(Result result, AudioRecorderUtils audioRecorderUtils) {
-    try{
-      ResumeRecordingCallable resumeAudioRecordingTask = new ResumeRecordingCallable(audioRecorderUtils);
-      FutureTask<Void> futureTask = new FutureTask<>(resumeAudioRecordingTask);
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(futureTask);
-
-      while(true){
-        try{
-          if(futureTask.isDone()){
-            futureTask.get();
-            result.success(true);
-          }
-        }catch (Exception e){
-          Log.d(TAG, e.toString());
-          result.error(TAG, "ResumeRecordingAudio error", e.toString());
-        }
-      }}catch(Exception e){
-      Log.d(TAG, e.toString());
-      result.error(TAG, "ResumeRecordingAudio error", e.toString());
-    }
-  }
-
-  private static class PauseAudioRecordingCallable implements Callable<Void> {
-   private AudioRecorderUtils audioRecorderUtils;
-
-    public  PauseAudioRecordingCallable(AudioRecorderUtils recorderUtils){
-      this.audioRecorderUtils = recorderUtils;
-    }
-    @Override
-    public Void call() {
-      try {
-        audioRecorderUtils.pauseRecording();
-      }catch (Exception e){
-        throw e;
-      }
-      return null;
-    }
-  }
-
-  private void  runPauseRecordingTask(Result result, AudioRecorderUtils audioRecorderUtils) {
-    try{
-      PauseAudioRecordingCallable pauseAudioTask = new PauseAudioRecordingCallable(audioRecorderUtils);
-      FutureTask<Void> futureTask = new FutureTask<>(pauseAudioTask);
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(futureTask);
-
-      while(true){
-        try{
-          if(futureTask.isDone()){
-            futureTask.get();
-            result.success(true);
-          }
-        }catch (Exception e){
-          Log.d(TAG, e.toString());
-          result.error(TAG, "PauseRecordingAudio error", e.toString());
-        }
-      }}catch(Exception e){
-      Log.d(TAG, e.toString());
-      result.error(TAG, "PauseRecordingAudio error", e.toString());
-    }
-  }
-
-
-
-
-
-
 
 
 

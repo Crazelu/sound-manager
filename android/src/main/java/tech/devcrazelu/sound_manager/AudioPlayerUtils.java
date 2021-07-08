@@ -4,9 +4,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import java.io.IOException;
 
 public class AudioPlayerUtils {
@@ -17,7 +15,7 @@ public class AudioPlayerUtils {
 //        this.player = new MediaPlayer();
 //    }
 
-    public void playAudio(@NonNull String filePath, @NonNull Context context, boolean isFullPath ){
+    public void playAudio(@NonNull String filePath, @NonNull Context context, boolean isFullPath ) throws Exception {
         try{
             if(player == null) player = new MediaPlayer();
 
@@ -35,10 +33,12 @@ public class AudioPlayerUtils {
                 player.start();
             } catch (IOException e) {
                 Log.d(TAG, e.toString());
+                throw e;
             }
 
         }catch (Exception e){
             Log.d(TAG, e.toString());
+            throw e;
         }
 
 
@@ -46,17 +46,18 @@ public class AudioPlayerUtils {
 
     }
 
-    public void pauseAudio(){
+    public void pauseAudio() {
         try{
             if(player == null) return;
             player.pause();
         }catch (Exception e){
             Log.d(TAG, e.toString());
+            throw  e;
         }
 
     }
 
-    public void stopAudio(){
+    public void stopAudio()  {
         try{
             if(player == null) return;
 
@@ -65,26 +66,29 @@ public class AudioPlayerUtils {
             player = null;
         }catch (Exception e){
             Log.d(TAG, e.toString());
+            throw  e;
         }
     }
 
-    public void seek(int milliseconds){
+    public void seek(int milliseconds)  {
         try{
             if(player == null ) return;
 
             player.seekTo(milliseconds);
         }catch (Exception e){
             Log.d(TAG, e.toString());
+            throw  e;
         }
     }
 
-    public void setLooping(boolean shouldLoop){
+    public void setLooping(boolean shouldLoop) {
         try{
             if(player == null) return;
 
             player.setLooping(shouldLoop);
         }catch (Exception e){
             Log.d(TAG, e.toString());
+            throw  e;
         }
     }
 
