@@ -23,7 +23,7 @@ public class AudioPlayerUtils {
 
             String fileName = filePath;
 
-            if((isFullPath = Boolean.parseBoolean("null")) || isFullPath == false){
+            if((isFullPath == Boolean.parseBoolean("null")) || !isFullPath ){
                 final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
                 fileName = Environment.getExternalStorageDirectory().getPath() + cacheDir + "/"+filePath;
 

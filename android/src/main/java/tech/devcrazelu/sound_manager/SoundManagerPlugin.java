@@ -29,13 +29,24 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
   private MethodChannel channel;
   private Activity activity;
   private Context context;
-  private static String TAG = "SoundManager";
-  private static String CHANNEL = "sound_manager";
+  private static final String TAG = "SoundManager";
+  private static final String CHANNEL = "sound_manager";
+  private static final String REQUEST_PERMISSION = "requestPermission";
+  private static final String RECORD_AUDIO = "recordAudio";
+  private static final String PAUSE_RECORDING = "pauseRecording";
+  private static final String RESUMING_RECORDING = "resumeRecording";
+  private static final String SAVE_RECORDING = "saveRecording";
+  private static final String CANCEL_RECORDING = "cancelRecording";
+  private static final String PLAY_AUDIO = "playAudioFile";
+  private static final String PAUSE_AUDIO = "pauseAudioFile";
+  private static final String STOP_PLAYING_AUDIO = "stopPlayingAudioFile";
+  private static final String SEEK_TO = "seekTo";
+  private static final String SET_LOOPING = "setLooping";
 
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), CHANNEL);
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), CHANNEL);
     channel.setMethodCallHandler(this);
     context = flutterPluginBinding.getApplicationContext();
   }
@@ -51,48 +62,48 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
     switch (call.method) {
 
-      case "requestPermission":
+      case REQUEST_PERMISSION:
         runPermissionTask(context, result, activity, audioRecorderUtils);
         break;
 
-      case "recordAudio":
+      case RECORD_AUDIO:
         runRecordAudioTask(context, result, audioRecorderUtils);
         break;
 
-      case "pauseRecording":
+      case PAUSE_RECORDING:
         runPauseRecordingTask(result, audioRecorderUtils);
         break;
 
-      case "resumeRecording":
+      case RESUMING_RECORDING:
         runResumeAudioRecordingTask(result, audioRecorderUtils);
         break;
 
-      case "saveRecording":
+      case SAVE_RECORDING:
         runSaveRecordingTask(result, audioRecorderUtils);
         break;
 
-      case "playAudioFile":
+      case PLAY_AUDIO:
         boolean isFullPath = call.argument("isFullPath");
         String filePath = call.argument("filePath");
 
         runPlayAudioFileTask( result, audioPlayerUtils, filePath, context, isFullPath);
         break;
 
-      case "pauseAudioFile":
+      case PAUSE_AUDIO:
         runPauseAudioFileTask(result, audioPlayerUtils);
         break;
 
-      case "stopPlayingAudioFile":
+      case STOP_PLAYING_AUDIO:
          runStopPlayingAudioFileTask(result, audioPlayerUtils);
         break;
 
-      case "seekTo":
+      case SEEK_TO:
         int milliseconds = call.argument("time");
         runSeekToTask(result, audioPlayerUtils, milliseconds);
         break;
 
 
-      case "setLooping":
+      case SET_LOOPING:
         boolean shouldLoop = call.argument("repeatSong");
         runSetLoopingTask(result, audioPlayerUtils, shouldLoop);
         break;
@@ -564,6 +575,23 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   @Override
   public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+    binding.addRequestPermissionsResultListener(
+            new PluginRegistry.RequestPermissionsResultListener() {
+              @Override
+              public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+                switch (requestCode) {
+                  case AudioRecorderUtils.PERMISSION_REQUEST_CODE:
+                    for (int i = 0; i < grantResults.length; i++) {
+                      if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "Permission granted");
+                      }
+                    }
+
+                }
+                return false;
+              }
+            });
     activity = binding.getActivity();
   }
 
@@ -578,7 +606,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
           case AudioRecorderUtils.PERMISSION_REQUEST_CODE:
             for (int i = 0; i < grantResults.length; i++) {
               if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-
+                Log.d(TAG, "Permission granted");
               }
             }
 
