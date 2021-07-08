@@ -21,8 +21,18 @@ class SoundManager {
   static Future<bool> record({
     String? fileName,
     OutputFormat outputFormat = OutputFormat.three_gpp,
+    AudioEncoder audioEncoder = AudioEncoder.amr_nb,
+    AudioSource audioSource = AudioSource.mic,
   }) async {
-    return await _channel.invokeMethod("recordAudio", {"fileName": fileName});
+    return await _channel.invokeMethod(
+      "recordAudio",
+      {
+        "fileName": fileName,
+        "outputFormat": outputFormatEnumToInt(outputFormat),
+        "audioEncoder": audioEncoderEnumToInt(audioEncoder),
+        "audioSource": audioSourceEnumToInt(audioSource),
+      },
+    );
   }
 
   static Future<void> pauseRecording() async {

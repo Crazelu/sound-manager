@@ -1,10 +1,26 @@
 ///Represents the output format for encoding an audio recording
+///
+///Defaults to [OutputFormat.three_gpp]
+///
+///aac -> AAC ADTS file format
+///
+///amr_nb -> AMR NB file format
+///
+///amr_wb -> AMR WB file format
+///
+///mp4 -> MPEG4 media file format
+///
+///ogg -> Opus data in a Ogg container
+///
+///three_gpp -> 3GPP media file format
+///
+///webm -> VP8/VORBIS data in a WEBM container
 
 enum OutputFormat { three_gpp, mp4, ogg, aac, amr_wb, amr_nb, webm }
 
-int enumToInt(OutputFormat format) {
+int outputFormatEnumToInt(OutputFormat format) {
   switch (format) {
-    case OutputFormat.three_gpp:
+    case OutputFormat.webm:
       return 1;
     case OutputFormat.mp4:
       return 2;
@@ -17,7 +33,7 @@ int enumToInt(OutputFormat format) {
     case OutputFormat.amr_wb:
       return 6;
     default:
-      //webm
-      return 7;
+      //OutputFormat.three_gpp
+      return 0;
   }
 }
