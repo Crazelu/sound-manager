@@ -22,8 +22,8 @@ class SoundManager {
     return version;
   }
 
-  static Future<void> requestPermission() async {
-    return await _channel.invokeMethod(_REQUEST_PERMISSION);
+  static Future<void> init() async {
+    await _channel.invokeMethod(_REQUEST_PERMISSION);
   }
 
   //sound recording

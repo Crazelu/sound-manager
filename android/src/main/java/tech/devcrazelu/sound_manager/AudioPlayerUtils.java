@@ -13,9 +13,9 @@ public class AudioPlayerUtils {
     private static String TAG = "SoundManager";
     private MediaPlayer player;
 
-    AudioPlayerUtils(){
-        this.player = new MediaPlayer();
-    }
+//    AudioPlayerUtils(){
+//        this.player = new MediaPlayer();
+//    }
 
     public void playAudio(@NonNull String filePath, @NonNull Context context, boolean isFullPath ){
         try{

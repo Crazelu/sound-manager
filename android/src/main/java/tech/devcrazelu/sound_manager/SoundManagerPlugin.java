@@ -21,7 +21,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** SoundManagerPlugin */
 public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -63,11 +62,11 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     switch (call.method) {
 
       case REQUEST_PERMISSION:
-        runPermissionTask(context, result, activity, audioRecorderUtils);
+        new SoundManagerPluginUtils.Task(context,activity, result, new Callables.PermissionCallable(), audioRecorderUtils).execute();
         break;
 
       case RECORD_AUDIO:
-        runRecordAudioTask(context, result, audioRecorderUtils);
+        new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(), audioRecorderUtils).execute();
         break;
 
       case PAUSE_RECORDING:
@@ -458,108 +457,14 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
   }
 
 
-  private static class RecordAudioCallable implements Callable<Boolean> {
-    private Context context;
-    private  AudioRecorderUtils audioRecorderUtils;
-
-    public  RecordAudioCallable(Context context,  AudioRecorderUtils recorderUtils){
-      this.context = context;
-      this.audioRecorderUtils = recorderUtils;
-    }
-    @Override
-    public Boolean call() throws IOException {
-
-      try {
-        if (audioRecorderUtils.doesAppHavePermission(context)) {
-          audioRecorderUtils.recordAudio(context, null);
-          return true;
-        }
-        return false;
-      }catch(Exception e){
-        throw e;
-      }
-
-    }
-  }
 
 
 
 
-  private void  runRecordAudioTask(Context context, Result result, AudioRecorderUtils audioRecorderUtils) {
-    try{
-      RecordAudioCallable recordAudioTask = new RecordAudioCallable(context, audioRecorderUtils);
-      FutureTask<Boolean> futureTask = new FutureTask<>(recordAudioTask);
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(futureTask);
-
-      while(true){
-        try{
-          if(futureTask.isDone()){
-            if(futureTask.get() == true) result.success(true);
-            else result.error(TAG,"An error occurred. Verify that you have requested permission", null);
-          }
-        }catch (Exception e){
-          Log.d(TAG, e.toString());
-          result.error(TAG, "RecordAudio error", e.toString());
-        }
-      }}catch(Exception e){
-      Log.d(TAG, e.toString());
-      result.error(TAG, "RecordAudio error", e.toString());
-    }
-  }
-
-  private static class PermissionCallable implements Callable<Void> {
-    private Context context;
-    private Activity activity;
-    private AudioRecorderUtils audioRecorderUtils;
-
-    public  PermissionCallable(Context context, Activity activity, AudioRecorderUtils audioRecorderUtils){
-      this.context = context;
-      this.activity = activity;
-      this.audioRecorderUtils = audioRecorderUtils;
-    }
-    @Override
-    public Void call() {
-        try {
-          audioRecorderUtils.handlePermissionTask(context, activity);
-          return null;
-        }catch(Exception e){
-          throw e;
-        }
-
-    }
-  }
 
 
 
 
-  private void  runPermissionTask(Context context,Result result,Activity activity, AudioRecorderUtils audioRecorderUtils) {
-    try{
-      PermissionCallable permissionTask = new PermissionCallable(context, activity, audioRecorderUtils);
-
-      FutureTask<Void> futureTask = new FutureTask<>(permissionTask);
-
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-
-      executor.submit(futureTask);
-
-      while(true){
-        try{
-
-          if(futureTask.isDone()){
-            futureTask.get();
-            result.success(true);
-          }
-        }catch (Exception e){
-          Log.d(TAG, e.toString());
-          result.error(TAG, "Permission error", e.toString());
-        }
-      }}catch(Exception e){
-      Log.d(TAG, e.toString());
-      result.error(TAG, "Permission error", e.toString());
-    }
-
-  }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {

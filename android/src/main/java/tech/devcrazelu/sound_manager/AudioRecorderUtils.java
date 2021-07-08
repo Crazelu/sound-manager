@@ -20,9 +20,9 @@ public class AudioRecorderUtils {
 
     private String audioRecordingFilePath = "";
 
-    AudioRecorderUtils(){
-        this.recorder = new MediaRecorder();
-    }
+//    AudioRecorderUtils(){
+//        this.recorder = new MediaRecorder();
+//    }
 
     public void handlePermissionTask(Context context, Activity activity){
         if(!doesAppHavePermission(context)){
