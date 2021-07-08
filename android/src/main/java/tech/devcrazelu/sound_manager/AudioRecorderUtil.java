@@ -45,7 +45,25 @@ public class AudioRecorderUtil {
         }
     }
 
-    public void recordAudio(Context context, String filePath) throws Exception {
+    private String getFileExtension(int outputFormat){
+        switch (outputFormat){
+            case 2:
+                return ".mp4";
+            case 3:
+            case 4:
+                return ".amr";
+            case 6:
+                return ".aac";
+            case 9:
+                return ".webm";
+            case 11:
+                return ".ogg";
+            default:
+                return ".3gp";
+        }
+    }
+
+    public void recordAudio(String filePath, int audioSource, int outputFormat, int audioEncoder) throws Exception {
 
         //TODO: Provide parameter to allow customization of storage directory
 
@@ -54,7 +72,7 @@ public class AudioRecorderUtil {
 
             filePath = "VN_"+System.currentTimeMillis();
         }
-        this.audioRecordingFilePath = Environment.getExternalStorageDirectory() + "/" + filePath + ".3gp";
+        this.audioRecordingFilePath = Environment.getExternalStorageDirectory() + "/" + filePath + getFileExtension(outputFormat);
 
         File file = new File(audioRecordingFilePath);
         file.createNewFile();
@@ -64,9 +82,9 @@ public class AudioRecorderUtil {
             if(recorder == null){
                 this.recorder = new MediaRecorder();
             }
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder.setAudioSource(audioSource);
+            recorder.setOutputFormat(outputFormat);
+            recorder.setAudioEncoder(audioEncoder);
             recorder.setOutputFile(file.getAbsolutePath());
 
             try{

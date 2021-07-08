@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -80,7 +81,11 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
         break;
 
       case RECORD_AUDIO:
-        new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(), audioRecorderUtil).execute();
+        @Nullable  String filePath = call.argument("filePath");
+        int audioSource =  call.argument("audioSource");
+        int outputFormat = call.argument("audioSource");
+        int audioEncoder = call.argument("audioSource");
+        new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(filePath, audioSource, outputFormat, audioEncoder), audioRecorderUtil).execute();
         break;
 
       case PAUSE_RECORDING:
@@ -97,9 +102,9 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
       case PLAY_AUDIO:
         boolean isFullPath = call.argument("isFullPath");
-        String filePath = call.argument("filePath");
+        String audioFilePath = call.argument("filePath");
 
-        new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(filePath, isFullPath), audioPlayerUtil).execute();
+        new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(audioFilePath, isFullPath), audioPlayerUtil).execute();
         break;
 
       case PAUSE_AUDIO:
