@@ -7,7 +7,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +27,10 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
   private MethodChannel channel;
   private Activity activity;
   private Context context;
+  private AudioRecorderUtil audioRecorderUtil;
+  private AudioPlayerUtil audioPlayerUtil;
+
+
   private static final String TAG = "SoundManager";
   private static final String CHANNEL = "sound_manager";
   private static final String REQUEST_PERMISSION = "requestPermission";
@@ -37,8 +40,8 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
   private static final String SAVE_RECORDING = "saveRecording";
   private static final String CANCEL_RECORDING = "cancelRecording";
   private static final String PLAY_AUDIO = "playAudioFile";
-  private static final String PAUSE_AUDIO = "pauseAudioFile";
-  private static final String STOP_PLAYING_AUDIO = "stopPlayingAudioFile";
+  private static final String PAUSE_AUDIO = "pauseAudioPlayback";
+  private static final String STOP_PLAYING_AUDIO = "stopPlayingAudio";
   private static final String SEEK_TO = "seekTo";
   private static final String SET_LOOPING = "setLooping";
 
@@ -50,61 +53,72 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     context = flutterPluginBinding.getApplicationContext();
   }
 
+  ///Initializes audioRecorderUtil and audioPlayerUtil
+  void setupUtils(){
+    if(audioRecorderUtil == null){
+      audioRecorderUtil = new AudioRecorderUtil();
+    }
+
+    if(audioPlayerUtil == null){
+      audioPlayerUtil = new AudioPlayerUtil();
+    }
+
+  }
+
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result rawResult) {
 
     final Result result = new MethodResultWrapper(rawResult);
 
-    AudioRecorderUtils audioRecorderUtils = new AudioRecorderUtils();
-    AudioPlayerUtils audioPlayerUtils = new AudioPlayerUtils();
+    setupUtils();
 
     switch (call.method) {
 
       case REQUEST_PERMISSION:
-        new SoundManagerPluginUtils.Task(context,activity, result, new Callables.PermissionCallable(), audioRecorderUtils).execute();
+        new SoundManagerPluginUtils.Task(context,activity, result, new Callables.PermissionCallable(), audioRecorderUtil).execute();
         break;
 
       case RECORD_AUDIO:
-        new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(), audioRecorderUtils).execute();
+        new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(), audioRecorderUtil).execute();
         break;
 
       case PAUSE_RECORDING:
-        new SoundManagerPluginUtils.Task(null,null, result, new Callables.PauseAudioRecordingCallable(), audioRecorderUtils).execute();
+        new SoundManagerPluginUtils.Task(null,null, result, new Callables.PauseAudioRecordingCallable(), audioRecorderUtil).execute();
         break;
 
       case RESUMING_RECORDING:
-        new SoundManagerPluginUtils.Task(null,null, result, new Callables.ResumeRecordingCallable(), audioRecorderUtils).execute();
+        new SoundManagerPluginUtils.Task(null,null, result, new Callables.ResumeRecordingCallable(), audioRecorderUtil).execute();
         break;
 
       case SAVE_RECORDING:
-        new SoundManagerPluginUtils.Task(null,null, result, new Callables.SaveRecordingCallable(), audioRecorderUtils).execute();
+        new SoundManagerPluginUtils.Task(null,null, result, new Callables.SaveRecordingCallable(), audioRecorderUtil).execute();
         break;
 
       case PLAY_AUDIO:
         boolean isFullPath = call.argument("isFullPath");
         String filePath = call.argument("filePath");
 
-        new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(filePath, isFullPath), audioPlayerUtils).execute();
+        new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(filePath, isFullPath), audioPlayerUtil).execute();
         break;
 
       case PAUSE_AUDIO:
-        runPauseAudioFileTask(result, audioPlayerUtils);
+        runPauseAudioFileTask(result, audioPlayerUtil);
         break;
 
       case STOP_PLAYING_AUDIO:
-         runStopPlayingAudioFileTask(result, audioPlayerUtils);
+         runStopPlayingAudioFileTask(result, audioPlayerUtil);
         break;
 
       case SEEK_TO:
         int milliseconds = call.argument("time");
-        runSeekToTask(result, audioPlayerUtils, milliseconds);
+        runSeekToTask(result, audioPlayerUtil, milliseconds);
         break;
 
 
       case SET_LOOPING:
         boolean shouldLoop = call.argument("repeatSong");
-        runSetLoopingTask(result, audioPlayerUtils, shouldLoop);
+        runSetLoopingTask(result, audioPlayerUtil, shouldLoop);
         break;
 
 
@@ -115,17 +129,17 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   private static class SeekToCallable implements Callable<Void> {
 
-    private AudioPlayerUtils audioPlayerUtils;
+    private AudioPlayerUtil audioPlayerUtil;
     private int milliseconds;
 
-    public  SeekToCallable(AudioPlayerUtils audioPlayerUtils, int milliseconds){
-      this.audioPlayerUtils = audioPlayerUtils;
+    public  SeekToCallable(AudioPlayerUtil audioPlayerUtil, int milliseconds){
+      this.audioPlayerUtil = audioPlayerUtil;
       this.milliseconds = milliseconds;
     }
     @Override
     public Void call() {
       try {
-        audioPlayerUtils.seek(milliseconds);
+        audioPlayerUtil.seek(milliseconds);
       }catch (Exception e){
      throw e;
 
@@ -134,9 +148,9 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
   }
 
-  private void  runSeekToTask(Result result, AudioPlayerUtils audioPlayerUtils, int milliseconds) {
+  private void  runSeekToTask(Result result, AudioPlayerUtil audioPlayerUtil, int milliseconds) {
     try{
-      SeekToCallable seekToTask = new SeekToCallable(audioPlayerUtils, milliseconds);
+      SeekToCallable seekToTask = new SeekToCallable(audioPlayerUtil, milliseconds);
       FutureTask<Void> futureTask = new FutureTask<>(seekToTask);
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(futureTask);
@@ -159,17 +173,17 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
 
   private static class SetLoopingCallable implements Callable<Void> {
-    private AudioPlayerUtils audioPlayerUtils;
+    private AudioPlayerUtil audioPlayerUtil;
     private boolean shouldLoop;
 
-    public  SetLoopingCallable(AudioPlayerUtils audioPlayerUtils, boolean shouldLoop){
-      this.audioPlayerUtils = audioPlayerUtils;
+    public  SetLoopingCallable(AudioPlayerUtil audioPlayerUtil, boolean shouldLoop){
+      this.audioPlayerUtil = audioPlayerUtil;
       this.shouldLoop = shouldLoop;
     }
     @Override
     public Void call() {
       try {
-        audioPlayerUtils.setLooping(shouldLoop);
+        audioPlayerUtil.setLooping(shouldLoop);
       }catch (Exception e){
        throw e;
       }
@@ -177,9 +191,9 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
   }
 
-  private void  runSetLoopingTask(Result result, AudioPlayerUtils audioPlayerUtils, boolean shouldLoop) {
+  private void  runSetLoopingTask(Result result, AudioPlayerUtil audioPlayerUtil, boolean shouldLoop) {
     try{
-      SetLoopingCallable setLoopingTask = new SetLoopingCallable(audioPlayerUtils, shouldLoop);
+      SetLoopingCallable setLoopingTask = new SetLoopingCallable(audioPlayerUtil, shouldLoop);
       FutureTask<Void> futureTask = new FutureTask<>(setLoopingTask);
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(futureTask);
@@ -203,15 +217,15 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   private static class PauseAudioCallable implements Callable<Void> {
 
-    private AudioPlayerUtils audioPlayerUtils;
+    private AudioPlayerUtil audioPlayerUtil;
 
-    public  PauseAudioCallable(AudioPlayerUtils audioPlayerUtils){
-      this.audioPlayerUtils = audioPlayerUtils;
+    public  PauseAudioCallable(AudioPlayerUtil audioPlayerUtil){
+      this.audioPlayerUtil = audioPlayerUtil;
     }
     @Override
     public Void call() {
       try {
-        audioPlayerUtils.pauseAudio();
+        audioPlayerUtil.pauseAudio();
       }catch (Exception e){
        throw e;
       }
@@ -219,9 +233,9 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
   }
 
-  private void  runPauseAudioFileTask(Result result, AudioPlayerUtils audioPlayerUtils) {
+  private void  runPauseAudioFileTask(Result result, AudioPlayerUtil audioPlayerUtil) {
     try{
-      PauseAudioCallable pauseAudioFileTask = new PauseAudioCallable(audioPlayerUtils);
+      PauseAudioCallable pauseAudioFileTask = new PauseAudioCallable(audioPlayerUtil);
       FutureTask<Void> futureTask = new FutureTask<>(pauseAudioFileTask);
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(futureTask);
@@ -245,15 +259,15 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   private static class StopPlayingAudioCallable implements Callable<Void> {
 
-    private AudioPlayerUtils audioPlayerUtils;
+    private AudioPlayerUtil audioPlayerUtil;
 
-    public  StopPlayingAudioCallable(AudioPlayerUtils audioPlayerUtils){
-      this.audioPlayerUtils = audioPlayerUtils;
+    public  StopPlayingAudioCallable(AudioPlayerUtil audioPlayerUtil){
+      this.audioPlayerUtil = audioPlayerUtil;
     }
     @Override
     public Void call() {
       try {
-        audioPlayerUtils.stopAudio();
+        audioPlayerUtil.stopAudio();
       }catch (Exception e){
         throw e;
       }
@@ -261,9 +275,9 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
   }
 
-  private void  runStopPlayingAudioFileTask(Result result, AudioPlayerUtils audioPlayerUtils) {
+  private void  runStopPlayingAudioFileTask(Result result, AudioPlayerUtil audioPlayerUtil) {
     try{
-      StopPlayingAudioCallable stopPlayingAudioFileTask = new StopPlayingAudioCallable(audioPlayerUtils);
+      StopPlayingAudioCallable stopPlayingAudioFileTask = new StopPlayingAudioCallable(audioPlayerUtil);
       FutureTask<Void> futureTask = new FutureTask<>(stopPlayingAudioFileTask);
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(futureTask);
@@ -309,7 +323,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
               public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
                 switch (requestCode) {
-                  case AudioRecorderUtils.PERMISSION_REQUEST_CODE:
+                  case AudioRecorderUtil.PERMISSION_REQUEST_CODE:
                     for (int i = 0; i < grantResults.length; i++) {
                       if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         Log.d(TAG, "Permission granted");
@@ -331,7 +345,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
       public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         switch (requestCode) {
-          case AudioRecorderUtils.PERMISSION_REQUEST_CODE:
+          case AudioRecorderUtil.PERMISSION_REQUEST_CODE:
             for (int i = 0; i < grantResults.length; i++) {
               if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Permission granted");

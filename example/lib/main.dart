@@ -14,7 +14,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.resolveWith(
+                (states) => Colors.blue,
+              ),
+              foregroundColor: MaterialStateProperty.resolveWith(
+                (states) => Colors.white,
+              ),
+              minimumSize: MaterialStateProperty.resolveWith(
+                (states) => Size(150, 60),
+              ),
+            ),
+          )),
       home: DemoApp(),
     );
   }
@@ -32,32 +46,49 @@ class _DemoAppState extends State<DemoApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      initPlatformState();
       requestPermission();
     });
   }
 
   Future<void> requestPermission() async {
-    await SoundManager.init();
-    print("Done");
+    try {
+      await SoundManager.init();
+      print("Done");
+    } catch (e) {
+      print(e);
+    }
   }
 
-  Future<void> initPlatformState() async {
-    String platformVersion;
-
+  Future<void> recordAudio() async {
     try {
-      platformVersion = await SoundManager.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      await SoundManager.record();
     } catch (e) {
-      platformVersion = 'Failed to get platform version.';
+      print(e);
     }
+  }
 
-    if (!mounted) return;
+  Future<void> pauseRecording() async {
+    try {
+      await SoundManager.pauseRecording();
+    } catch (e) {
+      print(e);
+    }
+  }
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+  Future<void> resume() async {
+    try {
+      await SoundManager.resumeRecording();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> saveRecording() async {
+    try {
+      await SoundManager.saveRecording();
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -66,8 +97,24 @@ class _DemoAppState extends State<DemoApp> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(
-        child: Text('Running on: $_platformVersion\n'),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextButton(
+              onPressed: () => recordAudio(), child: Text("Start recording")),
+          SizedBox(height: 20),
+          TextButton(
+              onPressed: () => pauseRecording(),
+              child: Text("Pause recording")),
+          SizedBox(height: 20),
+          TextButton(
+              onPressed: () => resume(), child: Text("Resume recording")),
+          SizedBox(height: 20),
+          TextButton(
+              onPressed: () => saveRecording(), child: Text("Save recording")),
+          SizedBox(height: 20),
+        ],
       ),
     );
   }

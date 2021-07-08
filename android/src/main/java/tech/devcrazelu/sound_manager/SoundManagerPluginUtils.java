@@ -21,18 +21,18 @@ public class SoundManagerPluginUtils {
         private Activity activity;
         private Result result;
         private AudioRecorderCallable callable;
-        private AudioRecorderUtils audioRecorderUtils;
+        private AudioRecorderUtil audioRecorderUtil;
 
-        public  Task(Context context, @Nullable Activity activity, Result result, AudioRecorderCallable callable, @Nullable AudioRecorderUtils audioRecorderUtils){
+        public  Task(Context context, @Nullable Activity activity, Result result, AudioRecorderCallable callable, @Nullable AudioRecorderUtil audioRecorderUtil){
             this.context = context;
             this.result = new MethodResultWrapper(result);
             this.callable = callable;
             this.activity = activity;
-            this.audioRecorderUtils = audioRecorderUtils;
+            this.audioRecorderUtil = audioRecorderUtil;
         }
 
         private void invoke(AudioRecorderCallable callable) throws Exception {
-           callable.call(context,activity,audioRecorderUtils);
+           callable.call(context,activity, audioRecorderUtil);
         }
 
         protected Void doInBackground(Void... params) {
@@ -40,6 +40,7 @@ public class SoundManagerPluginUtils {
                 invoke(callable);
                 result.success(true);
             } catch (Exception e) {
+                e.printStackTrace();
                 Log.d(TAG, e.toString());
                 result.error(TAG, ERROR_TAG, e.toString());
             }
@@ -52,18 +53,18 @@ public class SoundManagerPluginUtils {
         private Activity activity;
         private Result result;
         private AudioPlayerCallable callable;
-        private AudioPlayerUtils audioPlayerUtils;
+        private AudioPlayerUtil audioPlayerUtil;
 
-        public  AudioPlayerTask(Context context, @Nullable Activity activity, Result result, AudioPlayerCallable callable, @Nullable AudioPlayerUtils audioPlayerUtils){
+        public  AudioPlayerTask(Context context, @Nullable Activity activity, Result result, AudioPlayerCallable callable, @Nullable AudioPlayerUtil audioPlayerUtil){
             this.context = context;
             this.result = new MethodResultWrapper(result);
             this.callable = callable;
             this.activity = activity;
-            this.audioPlayerUtils = audioPlayerUtils;
+            this.audioPlayerUtil = audioPlayerUtil;
         }
 
         private void invoke(AudioPlayerCallable callable) throws Exception {
-           callable.call(context,activity,audioPlayerUtils);
+           callable.call(context,activity, audioPlayerUtil);
         }
 
         protected Void doInBackground(Void... params) {

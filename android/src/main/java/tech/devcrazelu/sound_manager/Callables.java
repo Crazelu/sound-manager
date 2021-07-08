@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import java.io.IOException;
 
 interface AudioRecorderCallable<T>{
-     T call(Context context, @Nullable Activity activity, AudioRecorderUtils audioRecorderUtils) throws Exception;
+     T call(Context context, @Nullable Activity activity, AudioRecorderUtil audioRecorderUtil) throws Exception;
 }interface AudioPlayerCallable<T>{
-     T call(Context context, @Nullable Activity activity,AudioPlayerUtils audioPlayerUtils) throws Exception;
+     T call(Context context, @Nullable Activity activity, AudioPlayerUtil audioPlayerUtil) throws Exception;
 }
 
 public class Callables {
@@ -17,9 +16,9 @@ public class Callables {
     public static class PermissionCallable implements AudioRecorderCallable<Void> {
 
         @Override
-        public Void call(@NonNull Context context,@NonNull Activity activity,@NonNull AudioRecorderUtils audioRecorderUtils) {
+        public Void call(@NonNull Context context,@NonNull Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil) {
 
-                audioRecorderUtils.handlePermissionTask(context, activity);
+                audioRecorderUtil.handlePermissionTask(context, activity);
                 return null;
 
         }
@@ -28,10 +27,10 @@ public class Callables {
     public static class RecordAudioCallable implements AudioRecorderCallable<Boolean> {
 
         @Override
-        public Boolean call(@NonNull Context context, @Nullable Activity activity,@NonNull AudioRecorderUtils audioRecorderUtils) throws Exception {
+        public Boolean call(@NonNull Context context, @Nullable Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil) throws Exception {
 
-                if (audioRecorderUtils.doesAppHavePermission(context)) {
-                    audioRecorderUtils.recordAudio(context, null);
+                if (audioRecorderUtil.doesAppHavePermission(context)) {
+                    audioRecorderUtil.recordAudio(context, null);
                     return true;
                 }
                 return false;
@@ -43,9 +42,9 @@ public class Callables {
     public static class PauseAudioRecordingCallable implements AudioRecorderCallable<Void> {
 
         @Override
-        public Void call(@Nullable Context context, @Nullable Activity activity,@NonNull AudioRecorderUtils audioRecorderUtils) {
+        public Void call(@Nullable Context context, @Nullable Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil) {
 
-                audioRecorderUtils.pauseRecording();
+                audioRecorderUtil.pauseRecording();
 
             return null;
         }
@@ -54,9 +53,9 @@ public class Callables {
     public static class ResumeRecordingCallable implements AudioRecorderCallable<Void> {
 
         @Override
-        public Void call(@Nullable Context context, @Nullable Activity activity, AudioRecorderUtils audioRecorderUtils) {
+        public Void call(@Nullable Context context, @Nullable Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil) {
 
-                audioRecorderUtils.resumeRecordingAudio();
+                audioRecorderUtil.resumeRecordingAudio();
 
             return null;
         }
@@ -65,9 +64,9 @@ public class Callables {
     public static class SaveRecordingCallable implements AudioRecorderCallable<Void> {
 
         @Override
-        public Void call(@Nullable Context context, @Nullable Activity activity, AudioRecorderUtils audioRecorderUtils){
+        public Void call(@Nullable Context context, @Nullable Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil){
 
-                audioRecorderUtils.saveRecording();
+                audioRecorderUtil.saveRecording();
             return null;
         }
     }
@@ -83,9 +82,9 @@ public class Callables {
 
 
         @Override
-        public Void call(Context context, @Nullable Activity activity, AudioPlayerUtils audioPlayerUtils) throws Exception {
+        public Void call(Context context, @Nullable Activity activity, AudioPlayerUtil audioPlayerUtil) throws Exception {
 
-                audioPlayerUtils.playAudio(filePath, context, isFullPath);
+                audioPlayerUtil.playAudio(filePath, context, isFullPath);
 
             return null;
         }

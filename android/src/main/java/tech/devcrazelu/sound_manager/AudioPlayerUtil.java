@@ -7,7 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import java.io.IOException;
 
-public class AudioPlayerUtils {
+public class AudioPlayerUtil {
     private static String TAG = "SoundManager";
     private MediaPlayer player;
 

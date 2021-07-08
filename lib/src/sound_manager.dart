@@ -1,20 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 
 class SoundManager {
-  static final String _REQUEST_PERMISSION = "requestPermission";
-  static final String _RECORD_AUDIO = "recordAudio";
-  static final String _PAUSE_RECORDING = "pauseRecording";
-  static final String _RESUMING_RECORDING = "resumeRecording";
-  static final String _CANCEL_RECORDING = "cancelRecording";
-  static final String _SAVE_RECORDING = "saveRecording";
-  static final String _PLAY_AUDIO = "playAudioFile";
-  static final String _PAUSE_AUDIO = "pauseAudioFile";
-  static final String _STOP_PLAYING_AUDIO = "stopPlayingAudioFile";
-  static final String _SEEK_TO = "seekTo";
-  static final String _SET_LOOPING = "setLooping";
-
   static const MethodChannel _channel = const MethodChannel('sound_manager');
 
   static Future<String> get platformVersion async {
@@ -22,40 +9,54 @@ class SoundManager {
     return version;
   }
 
+  ///Requests permissions to record audio and write to external storage on Android
   static Future<void> init() async {
-    await _channel.invokeMethod(_REQUEST_PERMISSION);
+    await _channel.invokeMethod("requestPermission");
   }
 
   //sound recording
 
-  Future<bool> record({String? fileName, String? filePath}) async {
-    return await _channel.invokeMethod(_RECORD_AUDIO);
+  ///Starts recording audio
+  static Future<bool> record({String? fileName}) async {
+    return await _channel.invokeMethod("recordAudio", {"fileName": fileName});
   }
 
-  Future<void> pauseRecording() async {
-    return await _channel.invokeMethod(_PAUSE_RECORDING);
+  static Future<void> pauseRecording() async {
+    return await _channel.invokeMethod("pauseRecording");
   }
 
-  Future<void> cancelRecording() async {
-    return await _channel.invokeMethod(_CANCEL_RECORDING);
+  static Future<void> resumeRecording() async {
+    return await _channel.invokeMethod("resumeRecording");
   }
 
-  Future<void> saveRecording() async {
-    return await _channel.invokeMethod(_SAVE_RECORDING);
+  static Future<void> cancelRecording() async {
+    return await _channel.invokeMethod("cancelRecording");
+  }
+
+  static Future<void> saveRecording() async {
+    return await _channel.invokeMethod("saveRecording");
   }
 
   //Audio playing
 
   Future<void> play({required String filePath}) async {
     //TODO: Mark filePath as required
-    return await _channel.invokeMethod(_PLAY_AUDIO, {"filePath": filePath});
+    return await _channel.invokeMethod("playAudioFile", {"filePath": filePath});
   }
 
   Future<void> pause() async {
-    return await _channel.invokeMethod(_PAUSE_AUDIO);
+    return await _channel.invokeMethod("pauseAudioPlayback");
   }
 
   Future<void> stop() async {
-    return await _channel.invokeMethod(_STOP_PLAYING_AUDIO);
+    return await _channel.invokeMethod("stopPlayingAudio");
+  }
+
+  Future<void> seekTo() async {
+    return await _channel.invokeMethod("seekTo");
+  }
+
+  Future<void> loop() async {
+    return await _channel.invokeMethod("setLooping");
   }
 }
