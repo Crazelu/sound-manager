@@ -10,10 +10,10 @@ enum AudioSource { mic, cam }
 int audioSourceEnumToInt(AudioSource source) {
   switch (source) {
     case AudioSource.cam:
-      return 1;
+      return 5;
 
     default:
       //AudioSource.mic
-      return 0;
+      return 1;
   }
 }

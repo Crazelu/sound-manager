@@ -20,19 +20,19 @@ enum AudioEncoder { aac, aac_eld, amr_nb, amr_wb, he_aac, opus, vorbis }
 int audioEncoderEnumToInt(AudioEncoder encoder) {
   switch (encoder) {
     case AudioEncoder.aac:
-      return 1;
-    case AudioEncoder.aac_eld:
-      return 2;
-    case AudioEncoder.vorbis:
       return 3;
-    case AudioEncoder.amr_wb:
-      return 4;
-    case AudioEncoder.he_aac:
+    case AudioEncoder.aac_eld:
       return 5;
-    case AudioEncoder.opus:
+    case AudioEncoder.vorbis:
       return 6;
+    case AudioEncoder.amr_wb:
+      return 2;
+    case AudioEncoder.he_aac:
+      return 4;
+    case AudioEncoder.opus:
+      return 7;
     default:
       //AudioEncoder.amr_nb
-      return 0;
+      return 1;
   }
 }

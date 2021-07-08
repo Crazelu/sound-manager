@@ -21,19 +21,19 @@ enum OutputFormat { three_gpp, mp4, ogg, aac, amr_wb, amr_nb, webm }
 int outputFormatEnumToInt(OutputFormat format) {
   switch (format) {
     case OutputFormat.webm:
-      return 1;
+      return 9;
     case OutputFormat.mp4:
       return 2;
     case OutputFormat.ogg:
-      return 3;
+      return 11;
     case OutputFormat.aac:
-      return 4;
-    case OutputFormat.amr_nb:
-      return 5;
-    case OutputFormat.amr_wb:
       return 6;
+    case OutputFormat.amr_nb:
+      return 3;
+    case OutputFormat.amr_wb:
+      return 4;
     default:
       //OutputFormat.three_gpp
-      return 0;
+      return 1;
   }
 }
