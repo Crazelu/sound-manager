@@ -19,7 +19,7 @@ public class SoundManagerPluginUtils {
     public static class Task extends AsyncTask<Void, Void, Void> {
         private Context context;
         private Activity activity;
-        private Result result;
+        private MethodResultWrapper result;
         private AudioRecorderCallable callable;
         private AudioRecorderUtil audioRecorderUtil;
 
@@ -31,13 +31,21 @@ public class SoundManagerPluginUtils {
             this.audioRecorderUtil = audioRecorderUtil;
         }
 
-        private void invoke(AudioRecorderCallable callable) throws Exception {
-           callable.call(context,activity, audioRecorderUtil);
+        private Object invoke(AudioRecorderCallable callable) throws Exception {
+          return callable.call(context,activity, audioRecorderUtil);
         }
 
         protected Void doInBackground(Void... params) {
             try {
-                invoke(callable);
+
+                //check if invocation of callable's call method returns a boolean and return that to
+                //Flutter instead of the default true value
+               Object invocationResult = invoke(callable);
+
+               if(invocationResult.getClass() == Boolean.class){
+                   result.success(invocationResult);
+                }
+
                 result.success(true);
             } catch (Exception e) {
                 e.printStackTrace();

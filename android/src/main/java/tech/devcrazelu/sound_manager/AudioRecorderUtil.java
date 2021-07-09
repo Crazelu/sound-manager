@@ -67,7 +67,30 @@ public class AudioRecorderUtil {
         if(recorder != null){
             recorder.reset();
             recorder.release();
+            recorder = null;
+            isRecording = false;
         }
+    }
+
+
+    public boolean cancelRecording() {
+        boolean result = false;
+        if (isRecording) {
+            try {
+                File file = new File(audioRecordingFilePath);
+
+                if (file.exists()) {
+                    if (file.delete()) {
+                        resetRecorder();
+                        result = true;
+                    }
+                }
+            } catch (Exception e) {
+                Log.d(TAG, e.toString());
+            }
+        }
+
+        return result;
     }
 
     public void recordAudio(String fileName, int audioSource, int outputFormat, int audioEncoder) throws Exception {
@@ -90,7 +113,7 @@ public class AudioRecorderUtil {
 
         try{
             if(recorder == null){
-                this.recorder = new MediaRecorder();
+                recorder = new MediaRecorder();
             }
             recorder.setAudioSource(audioSource);
             recorder.setOutputFormat(outputFormat);
@@ -162,8 +185,7 @@ public class AudioRecorderUtil {
 
             recorder.stop();
             resetRecorder();
-            recorder = null;
-            isRecording = false;
+
             this.audioRecordingFilePath = "";
             Log.d(TAG, "Saved recording and released resources");
         }catch(Exception e){

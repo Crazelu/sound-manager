@@ -71,6 +71,10 @@ public class MethodChannelImpl {
                 new SoundManagerPluginUtils.Task(null,null, result, new Callables.SaveRecordingCallable(), audioRecorderUtil).execute();
                 break;
 
+            case CANCEL_RECORDING:
+                new SoundManagerPluginUtils.Task(null,null, result, new Callables.CancelAudioRecordingCallable(), audioRecorderUtil).execute();
+                break;
+
             case PLAY_AUDIO:
                 boolean isFullPath = call.argument("isFullPath");
                 String audioFilePath = call.argument("filePath");

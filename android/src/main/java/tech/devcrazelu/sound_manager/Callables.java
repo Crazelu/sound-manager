@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 interface AudioRecorderCallable<T>{
-     T call(Context context, @Nullable Activity activity, AudioRecorderUtil audioRecorderUtil) throws Exception;
+     Object call(Context context, @Nullable Activity activity, AudioRecorderUtil audioRecorderUtil) throws Exception;
 }interface AudioPlayerCallable<T>{
      T call(Context context, @Nullable Activity activity, AudioPlayerUtil audioPlayerUtil) throws Exception;
 }
@@ -47,6 +47,16 @@ public class Callables {
                 }
                 return false;
 
+
+        }
+    }
+
+    public static class CancelAudioRecordingCallable implements AudioRecorderCallable<Boolean> {
+
+        @Override
+        public Boolean call(@Nullable Context context, @Nullable Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil) {
+
+              return audioRecorderUtil.cancelRecording();
 
         }
     }

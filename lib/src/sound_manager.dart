@@ -43,7 +43,7 @@ class SoundManager {
     return await _channel.invokeMethod("resumeRecording");
   }
 
-  static Future<void> cancelRecording() async {
+  static Future<bool> cancelRecording() async {
     return await _channel.invokeMethod("cancelRecording");
   }
 
