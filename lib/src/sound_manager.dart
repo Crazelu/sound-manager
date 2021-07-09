@@ -73,24 +73,45 @@ class SoundManager {
 
   //Audio playing
 
+  ///
   Future<void> play({required String filePath}) async {
-    //TODO: Mark filePath as required
-    return await _channel.invokeMethod("playAudioFile", {"filePath": filePath});
+    return await _channel.invokeMethod(
+      "playAudioFile",
+      {"filePath": filePath},
+    );
   }
 
   Future<void> pause() async {
     return await _channel.invokeMethod("pauseAudioPlayback");
   }
 
+  ///Resumes audio playback
+  Future<void> resume() async {
+    return await _channel.invokeMethod("resumeAudioPlayback");
+  }
+
+  ///Stops audio player
   Future<void> stop() async {
     return await _channel.invokeMethod("stopPlayingAudio");
   }
 
-  Future<void> seekTo() async {
-    return await _channel.invokeMethod("seekTo");
+  ///Seeks to `milliseconds` which is the offset in milliseconds from start of the audio playback.
+  Future<void> seekTo(int milliseconds) async {
+    assert(milliseconds > 0,
+        "Seeking must be done to a positive chunk of time in milliseconds");
+
+    return await _channel.invokeMethod(
+      "seekTo",
+      {"milliSeconds": milliseconds},
+    );
   }
 
-  Future<void> loop() async {
-    return await _channel.invokeMethod("setLooping");
+  ///Sets the audio player to be looping if `looping = true`.
+  ///Otherwise, sets audio player to be non-looping.
+  Future<void> loop({bool looping = true}) async {
+    return await _channel.invokeMethod(
+      "setLooping",
+      {"looping": looping},
+    );
   }
 }

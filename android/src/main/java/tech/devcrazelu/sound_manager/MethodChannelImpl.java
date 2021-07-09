@@ -19,6 +19,7 @@ public class MethodChannelImpl {
     private static final String CANCEL_RECORDING = "cancelRecording";
     private static final String PLAY_AUDIO = "playAudioFile";
     private static final String PAUSE_AUDIO = "pauseAudioPlayback";
+    private static final String RESUME_AUDIO_PLAYBACK = "resumeAudioPlayback";
     private static final String STOP_PLAYING_AUDIO = "stopPlayingAudio";
     private static final String SEEK_TO = "seekTo";
     private static final String SET_LOOPING = "setLooping";
@@ -76,31 +77,31 @@ public class MethodChannelImpl {
                 break;
 
             case PLAY_AUDIO:
-                boolean isFullPath = call.argument("isFullPath");
                 String audioFilePath = call.argument("filePath");
 
-                new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(audioFilePath, isFullPath), audioPlayerUtil).execute();
+                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.PlayAudioCallable(audioFilePath), audioPlayerUtil).execute();
                 break;
 
-//            case PAUSE_AUDIO:
-//                runPauseAudioFileTask(result, audioPlayerUtil);
-//                break;
-//
-//            case STOP_PLAYING_AUDIO:
-//                runStopPlayingAudioFileTask(result, audioPlayerUtil);
-//                break;
-//
-//            case SEEK_TO:
-//                int milliseconds = call.argument("time");
-//                runSeekToTask(result, audioPlayerUtil, milliseconds);
-//                break;
-//
-//
-//            case SET_LOOPING:
-//                boolean shouldLoop = call.argument("repeatSong");
-//                runSetLoopingTask(result, audioPlayerUtil, shouldLoop);
-//                break;
+            case PAUSE_AUDIO:
+                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.PauseAudioPlaybackCallable(), audioPlayerUtil).execute();
+                break;
 
+            case STOP_PLAYING_AUDIO:
+                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.StopPlayingAudioCallable(), audioPlayerUtil).execute();
+                break;
+
+            case SEEK_TO:
+                int milliSeconds = call.argument("milliSeconds");
+                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.SeekToCallable(milliSeconds), audioPlayerUtil).execute();
+                break;
+
+            case SET_LOOPING:
+                boolean shouldLoop = call.argument("looping");
+                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.SetLoopingCallable(shouldLoop), audioPlayerUtil).execute();
+                break;
+            case RESUME_AUDIO_PLAYBACK:
+                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.ResumeAudioPlaybackCallable(), audioPlayerUtil).execute();
+                break;
 
             default:
                 result.notImplemented();
