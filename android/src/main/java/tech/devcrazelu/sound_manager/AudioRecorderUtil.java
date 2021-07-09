@@ -4,12 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +75,11 @@ public class AudioRecorderUtil {
         }
     }
 
+    /**
+     * @param fileName name of file to be generated during recording.
+     * @param dir directory to save generated file
+     * @return full path to save generated file
+     */
    private String getFullPath(String fileName, String dir){
         String path = Environment.getExternalStorageDirectory().toString();
 
