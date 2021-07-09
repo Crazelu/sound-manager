@@ -53,7 +53,7 @@ public class AudioRecorderUtil {
     }
 
     /**
-     * @param outputFormat
+     * @param outputFormat output format of the file to be generated during audio recording.
      * @return file extension for given outputFormat.
      */
     private String getFileExtension(int outputFormat){
