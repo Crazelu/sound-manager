@@ -33,6 +33,9 @@ class SoundManager {
     AudioEncoder audioEncoder = AudioEncoder.amr_nb,
     AudioSource audioSource = AudioSource.mic,
   }) async {
+    assert(fileName == null || fileName.isNotEmpty,
+        "Can't pass an empty file name");
+
     return await _channel.invokeMethod(
       "recordAudio",
       {

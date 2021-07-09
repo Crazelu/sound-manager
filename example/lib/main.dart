@@ -58,9 +58,7 @@ class _DemoAppState extends State<DemoApp> {
 
   Future<void> recordAudio() async {
     try {
-      await SoundManager.record(
-        fileName: "my_recording",
-      );
+      await SoundManager.record();
     } catch (e) {
       print(e);
     }
