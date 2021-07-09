@@ -3,7 +3,6 @@ package tech.devcrazelu.sound_manager;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -35,7 +34,9 @@ public class MethodChannelImpl implements MethodCallHandler, PluginRegistry.Requ
         this.activity = activity;
     }
 
-    ///Initializes audioRecorderUtil and audioPlayerUtil
+    /**
+     * Initializes audioRecorderUtil and audioPlayerUtil
+     */
     void setupUtils(){
         if(audioRecorderUtil == null){
             audioRecorderUtil = new AudioRecorderUtil();
@@ -46,6 +47,9 @@ public class MethodChannelImpl implements MethodCallHandler, PluginRegistry.Requ
         }
     }
 
+    /**
+     * Releases resources and sets audioRecorderUtil and audioPlayerUtil to null
+     */
     void close(){
         audioRecorderUtil.resetRecorder();
         audioPlayerUtil.resetPlayer();
@@ -95,28 +99,28 @@ public class MethodChannelImpl implements MethodCallHandler, PluginRegistry.Requ
             case PLAY_AUDIO:
                 String audioFilePath = call.argument("filePath");
 
-                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.PlayAudioCallable(audioFilePath), audioPlayerUtil).execute();
+                audioPlayerUtil.playAudio(audioFilePath, result);
                 break;
 
             case PAUSE_AUDIO:
-                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.PauseAudioPlaybackCallable(), audioPlayerUtil).execute();
+                audioPlayerUtil.pauseAudio(result);
                 break;
 
             case STOP_PLAYING_AUDIO:
-                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.StopPlayingAudioCallable(), audioPlayerUtil).execute();
+                audioPlayerUtil.stopAudio(result, true);
                 break;
 
             case SEEK_TO:
                 int milliSeconds = call.argument("milliSeconds");
-                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.SeekToCallable(milliSeconds), audioPlayerUtil).execute();
+                audioPlayerUtil.seek(milliSeconds, result);
                 break;
 
             case SET_LOOPING:
                 boolean shouldLoop = call.argument("looping");
-                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.SetLoopingCallable(shouldLoop), audioPlayerUtil).execute();
+                audioPlayerUtil.setLooping(shouldLoop, result);
                 break;
             case RESUME_AUDIO_PLAYBACK:
-                new SoundManagerPluginUtils.AudioPlayerTask(result, new Callables.ResumeAudioPlaybackCallable(), audioPlayerUtil).execute();
+                audioPlayerUtil.resumeAudioPlayback(result);
                 break;
 
             default:
