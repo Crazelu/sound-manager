@@ -33,7 +33,7 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
 
   private static final String TAG = "SoundManager";
-  private static final String CHANNEL = "sound_manager";
+  private static final String CHANNEL = "tech.devcrazelu.sound_manager";
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
