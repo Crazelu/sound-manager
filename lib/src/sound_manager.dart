@@ -73,7 +73,13 @@ class SoundManager {
 
   //Audio playing
 
+  ///Initiates an audio playback session.
   ///
+  ///`filePath` -> Absolute path to the audio file on the device or
+  ///http/rstp URL of the stream you want to play.
+  ///
+  ///If you call this method while an audio currently being
+  ///played, current audio will be stopped and new audio playback will start.
   Future<void> play({required String filePath}) async {
     return await _channel.invokeMethod(
       "playAudioFile",
@@ -81,6 +87,8 @@ class SoundManager {
     );
   }
 
+  ///Pauses an ongoing audio playback.
+  ///It does nothing if `play()` is not called first.
   Future<void> pause() async {
     return await _channel.invokeMethod("pauseAudioPlayback");
   }
