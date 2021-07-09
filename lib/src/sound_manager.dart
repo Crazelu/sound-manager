@@ -29,7 +29,7 @@ class SoundManager {
   static Future<bool> record({
     String? fileName,
     String? directory,
-    OutputFormat outputFormat = OutputFormat.three_gpp,
+    OutputFormat outputFormat = OutputFormat.ogg,
     AudioEncoder audioEncoder = AudioEncoder.amr_nb,
     AudioSource audioSource = AudioSource.mic,
   }) async {

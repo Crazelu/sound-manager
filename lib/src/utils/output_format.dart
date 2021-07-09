@@ -1,6 +1,6 @@
 ///Represents the output format for encoding an audio recording
 ///
-///Defaults to [OutputFormat.three_gpp]
+///Defaults to [OutputFormat.ogg]
 ///
 ///aac -> AAC ADTS file format
 ///
@@ -24,8 +24,8 @@ int outputFormatEnumToInt(OutputFormat format) {
       return 9;
     case OutputFormat.mp4:
       return 2;
-    case OutputFormat.ogg:
-      return 11;
+    case OutputFormat.three_gpp:
+      return 1;
     case OutputFormat.aac:
       return 6;
     case OutputFormat.amr_nb:
@@ -33,7 +33,7 @@ int outputFormatEnumToInt(OutputFormat format) {
     case OutputFormat.amr_wb:
       return 4;
     default:
-      //OutputFormat.three_gpp
-      return 1;
+      //OutputFormat.ogg
+      return 11;
   }
 }
