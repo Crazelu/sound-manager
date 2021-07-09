@@ -31,7 +31,11 @@ public class AudioRecorderUtil {
         if(!doesAppHavePermission(context)){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.RECORD_AUDIO}, PackageManager.PERMISSION_GRANTED);
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.RECORD_AUDIO,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                        PackageManager.PERMISSION_GRANTED);
             }
         }
     }
