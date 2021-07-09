@@ -40,8 +40,6 @@ class DemoApp extends StatefulWidget {
 }
 
 class _DemoAppState extends State<DemoApp> {
-  String _platformVersion = 'Unknown';
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +59,9 @@ class _DemoAppState extends State<DemoApp> {
 
   Future<void> recordAudio() async {
     try {
-      await SoundManager.record();
+      await SoundManager.record(
+        fileName: "my_recording",
+      );
     } catch (e) {
       print(e);
     }

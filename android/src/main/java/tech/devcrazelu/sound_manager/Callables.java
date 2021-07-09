@@ -25,13 +25,13 @@ public class Callables {
     }
 
     public static class RecordAudioCallable implements AudioRecorderCallable<Boolean> {
-       private final String filePath;
-        private final int audioSource;
-        private final   int outputFormat;
-        private final  int audioEncoder;
+       private final String fileName;
+       private final int audioSource;
+       private final  int outputFormat;
+       private final  int audioEncoder;
 
-        public RecordAudioCallable(@Nullable String filePath,@NonNull int audioSource,@NonNull int outputFormat,@NonNull  int audioEncoder) {
-            this.filePath = filePath;
+        public RecordAudioCallable(@Nullable String fileName,@NonNull int audioSource,@NonNull int outputFormat,@NonNull  int audioEncoder) {
+            this.fileName = fileName;
             this.audioSource = audioSource;
             this.outputFormat = outputFormat;
             this.audioEncoder = audioEncoder;
@@ -42,7 +42,7 @@ public class Callables {
         public Boolean call(@NonNull Context context, @Nullable Activity activity,@NonNull AudioRecorderUtil audioRecorderUtil) throws Exception {
 
                 if (audioRecorderUtil.doesAppHavePermission(context)) {
-                    audioRecorderUtil.recordAudio(filePath, audioSource, outputFormat, audioEncoder);
+                    audioRecorderUtil.recordAudio(fileName, audioSource, outputFormat, audioEncoder);
                     return true;
                 }
                 return false;

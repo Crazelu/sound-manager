@@ -34,18 +34,6 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   private static final String TAG = "SoundManager";
   private static final String CHANNEL = "sound_manager";
-  private static final String REQUEST_PERMISSION = "requestPermission";
-  private static final String RECORD_AUDIO = "recordAudio";
-  private static final String PAUSE_RECORDING = "pauseRecording";
-  private static final String RESUMING_RECORDING = "resumeRecording";
-  private static final String SAVE_RECORDING = "saveRecording";
-  private static final String CANCEL_RECORDING = "cancelRecording";
-  private static final String PLAY_AUDIO = "playAudioFile";
-  private static final String PAUSE_AUDIO = "pauseAudioPlayback";
-  private static final String STOP_PLAYING_AUDIO = "stopPlayingAudio";
-  private static final String SEEK_TO = "seekTo";
-  private static final String SET_LOOPING = "setLooping";
-
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -68,68 +56,10 @@ public class SoundManagerPlugin implements FlutterPlugin, MethodCallHandler, Act
 
 
   @Override
-  public void onMethodCall(@NonNull MethodCall call, @NonNull Result rawResult) {
-
-    final Result result = new MethodResultWrapper(rawResult);
-
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     setupUtils();
+    new MethodChannelImpl(activity, context, call, result, audioRecorderUtil, audioPlayerUtil).run();
 
-    switch (call.method) {
-
-      case REQUEST_PERMISSION:
-        new SoundManagerPluginUtils.Task(context,activity, result, new Callables.PermissionCallable(), audioRecorderUtil).execute();
-        break;
-
-      case RECORD_AUDIO:
-        @Nullable  String filePath = call.argument("filePath");
-        int audioSource =  call.argument("audioSource");
-        int outputFormat = call.argument("audioSource");
-        int audioEncoder = call.argument("audioSource");
-        new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(filePath, audioSource, outputFormat, audioEncoder), audioRecorderUtil).execute();
-        break;
-
-      case PAUSE_RECORDING:
-        new SoundManagerPluginUtils.Task(null,null, result, new Callables.PauseAudioRecordingCallable(), audioRecorderUtil).execute();
-        break;
-
-      case RESUMING_RECORDING:
-        new SoundManagerPluginUtils.Task(null,null, result, new Callables.ResumeRecordingCallable(), audioRecorderUtil).execute();
-        break;
-
-      case SAVE_RECORDING:
-        new SoundManagerPluginUtils.Task(null,null, result, new Callables.SaveRecordingCallable(), audioRecorderUtil).execute();
-        break;
-
-      case PLAY_AUDIO:
-        boolean isFullPath = call.argument("isFullPath");
-        String audioFilePath = call.argument("filePath");
-
-        new SoundManagerPluginUtils.AudioPlayerTask(context,null, result, new Callables.PlayAudioCallable(audioFilePath, isFullPath), audioPlayerUtil).execute();
-        break;
-
-      case PAUSE_AUDIO:
-        runPauseAudioFileTask(result, audioPlayerUtil);
-        break;
-
-      case STOP_PLAYING_AUDIO:
-         runStopPlayingAudioFileTask(result, audioPlayerUtil);
-        break;
-
-      case SEEK_TO:
-        int milliseconds = call.argument("time");
-        runSeekToTask(result, audioPlayerUtil, milliseconds);
-        break;
-
-
-      case SET_LOOPING:
-        boolean shouldLoop = call.argument("repeatSong");
-        runSetLoopingTask(result, audioPlayerUtil, shouldLoop);
-        break;
-
-
-      default:
-        result.notImplemented();
-    }
   }
 
   private static class SeekToCallable implements Callable<Void> {

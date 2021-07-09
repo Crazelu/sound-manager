@@ -63,16 +63,26 @@ public class AudioRecorderUtil {
         }
     }
 
-    public void recordAudio(String filePath, int audioSource, int outputFormat, int audioEncoder) throws Exception {
+    private void resetRecorder(){
+        if(recorder != null){
+            recorder.reset();
+            recorder.release();
+        }
+    }
+
+    public void recordAudio(String fileName, int audioSource, int outputFormat, int audioEncoder) throws Exception {
+
+        if(isRecording) return;
+        resetRecorder();
 
         //TODO: Provide parameter to allow customization of storage directory
 
 
-        if(filePath == null){
+        if(fileName == null){
 
-            filePath = "VN_"+System.currentTimeMillis();
+            fileName = "VN_"+System.currentTimeMillis();
         }
-        this.audioRecordingFilePath = Environment.getExternalStorageDirectory() + "/" + filePath + getFileExtension(outputFormat);
+        this.audioRecordingFilePath = Environment.getExternalStorageDirectory() + "/" + fileName + getFileExtension(outputFormat);
 
         File file = new File(audioRecordingFilePath);
         file.createNewFile();
@@ -116,7 +126,7 @@ public class AudioRecorderUtil {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 try{
                     recorder.resume();
-
+                    Log.d(TAG, "Recording resumed");
                 }catch(Exception e){
                     Log.d(TAG, e.toString());
                     throw e;
@@ -151,7 +161,7 @@ public class AudioRecorderUtil {
             if(recorder == null) return;
 
             recorder.stop();
-            recorder.release();
+            resetRecorder();
             recorder = null;
             isRecording = false;
             this.audioRecordingFilePath = "";
