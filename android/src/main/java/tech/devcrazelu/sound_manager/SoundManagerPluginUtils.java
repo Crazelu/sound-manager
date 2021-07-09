@@ -42,7 +42,7 @@ public class SoundManagerPluginUtils {
                 //Flutter instead of the default true value
                Object invocationResult = invoke(callable);
 
-               if(invocationResult.getClass() == Boolean.class){
+               if(invocationResult != null && invocationResult.getClass() == Boolean.class){
                    result.success(invocationResult);
                 }
 

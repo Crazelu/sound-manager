@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:sound_manager/sound_manager.dart';
 
 void main() {
