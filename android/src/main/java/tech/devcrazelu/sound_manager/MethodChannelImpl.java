@@ -1,15 +1,16 @@
 package tech.devcrazelu.sound_manager;
 
 import android.app.Activity;
-import android.content.Context;
-
+import android.content.pm.PackageManager;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 
-public class MethodChannelImpl {
+
+public class MethodChannelImpl implements MethodCallHandler, PluginRegistry.RequestPermissionsResultListener{
 
     private static final String REQUEST_PERMISSION = "requestPermission";
     private static final String RECORD_AUDIO = "recordAudio";
@@ -23,57 +24,72 @@ public class MethodChannelImpl {
     private static final String STOP_PLAYING_AUDIO = "stopPlayingAudio";
     private static final String SEEK_TO = "seekTo";
     private static final String SET_LOOPING = "setLooping";
+    private static final String TAG = "SoundManager";
 
     private static Activity activity;
-    private static Context context;
-    private static AudioRecorderUtil audioRecorderUtil;
-    private static AudioPlayerUtil audioPlayerUtil;
-    private static MethodCall call;
-    private static Result rawResult;
+    private  AudioRecorderUtil audioRecorderUtil;
+    private  AudioPlayerUtil audioPlayerUtil;
+    private static Result permResult;
 
-    MethodChannelImpl(Activity activity, Context context, MethodCall call, Result rawResult,
-                      AudioRecorderUtil audioRecorderUtil, AudioPlayerUtil audioPlayerUtil
-                      ){
+    MethodChannelImpl(Activity activity ){
         this.activity = activity;
-        this.context = context;
-        this.call = call;
-        this.rawResult = rawResult;
-        this.audioRecorderUtil = audioRecorderUtil;
-        this.audioPlayerUtil =audioPlayerUtil;
+    }
+
+    ///Initializes audioRecorderUtil and audioPlayerUtil
+    void setupUtils(){
+        if(audioRecorderUtil == null){
+            audioRecorderUtil = new AudioRecorderUtil();
+        }
+
+        if(audioPlayerUtil == null){
+            audioPlayerUtil = new AudioPlayerUtil();
+        }
+    }
+
+    void close(){
+        audioRecorderUtil.resetRecorder();
+        audioPlayerUtil.resetPlayer();
+        audioRecorderUtil = null;
+        audioPlayerUtil = null;
     }
 
 
-    public static void run(){
+    @Override
+    public void onMethodCall(@NonNull MethodCall call, @NonNull Result rawResult) {
+
+        setupUtils();
         final Result result = new MethodResultWrapper(rawResult);
+        permResult = result;
 
         switch (call.method) {
 
             case REQUEST_PERMISSION:
-                new SoundManagerPluginUtils.Task(context,activity, result, new Callables.PermissionCallable(), audioRecorderUtil).execute();
+                audioRecorderUtil.handlePermissionTask(activity);
                 break;
 
             case RECORD_AUDIO:
-                @Nullable String fileName = call.argument("fileName");
+                String fileName = call.argument("fileName");
+                String directory = call.argument("directory");
                 int audioSource =  call.argument("audioSource");
                 int outputFormat = call.argument("outputFormat");
                 int audioEncoder = call.argument("audioEncoder");
-                new SoundManagerPluginUtils.Task(context,null, result, new Callables.RecordAudioCallable(fileName, audioSource, outputFormat, audioEncoder), audioRecorderUtil).execute();
+                audioRecorderUtil.recordAudio(fileName, directory, audioSource, outputFormat, audioEncoder, result);
                 break;
 
             case PAUSE_RECORDING:
-                new SoundManagerPluginUtils.Task(null,null, result, new Callables.PauseAudioRecordingCallable(), audioRecorderUtil).execute();
+                audioRecorderUtil.pauseRecording(result);
                 break;
 
             case RESUMING_RECORDING:
-                new SoundManagerPluginUtils.Task(null,null, result, new Callables.ResumeRecordingCallable(), audioRecorderUtil).execute();
+                audioRecorderUtil.resumeRecordingAudio(result);
                 break;
 
             case SAVE_RECORDING:
-                new SoundManagerPluginUtils.Task(null,null, result, new Callables.SaveRecordingCallable(), audioRecorderUtil).execute();
+                audioRecorderUtil.saveRecording(result);
                 break;
 
             case CANCEL_RECORDING:
-                new SoundManagerPluginUtils.Task(null,null, result, new Callables.CancelAudioRecordingCallable(), audioRecorderUtil).execute();
+                audioRecorderUtil.cancelRecording(result);
                 break;
 
             case PLAY_AUDIO:
@@ -106,5 +122,21 @@ public class MethodChannelImpl {
             default:
                 result.notImplemented();
         }
+    }
+
+    @Override
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == AudioRecorderUtil.PERMISSION_REQUEST_CODE) {
+            if (permResult != null) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permResult.success(true);
+                } else {
+                    permResult.error(TAG, "Permission denied", null);
+                }
+                permResult = null;
+                return true;
+            }
+        }
+        return false;
     }
 }

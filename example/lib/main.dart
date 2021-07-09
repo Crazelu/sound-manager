@@ -58,7 +58,7 @@ class _DemoAppState extends State<DemoApp> {
 
   Future<void> recordAudio() async {
     try {
-      await SoundManager.record();
+      await SoundManager.record(fileName: "testing2", directory: "/Download");
     } catch (e) {
       print(e);
     }
@@ -82,7 +82,16 @@ class _DemoAppState extends State<DemoApp> {
 
   Future<void> saveRecording() async {
     try {
-      await SoundManager.saveRecording();
+      var path = await SoundManager.saveRecording();
+      print("Recording saved at $path");
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> cancelRecording() async {
+    try {
+      await SoundManager.cancelRecording();
     } catch (e) {
       print(e);
     }
@@ -110,6 +119,13 @@ class _DemoAppState extends State<DemoApp> {
           SizedBox(height: 20),
           TextButton(
               onPressed: () => saveRecording(), child: Text("Save recording")),
+          SizedBox(height: 20),
+          TextButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith(
+                      (states) => Colors.red)),
+              onPressed: () => cancelRecording(),
+              child: Text("Cancel recording")),
           SizedBox(height: 20),
         ],
       ),

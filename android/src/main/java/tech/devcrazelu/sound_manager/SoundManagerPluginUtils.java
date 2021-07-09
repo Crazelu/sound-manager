@@ -17,14 +17,13 @@ public class SoundManagerPluginUtils {
 
 
     public static class Task extends AsyncTask<Void, Void, Void> {
-        private final Context context;
         private final Activity activity;
         private MethodResultWrapper result;
         private AudioRecorderCallable callable;
         private AudioRecorderUtil audioRecorderUtil;
 
-        public  Task(Context context, @Nullable Activity activity, Result result, AudioRecorderCallable callable, @Nullable AudioRecorderUtil audioRecorderUtil){
-            this.context = context;
+        public  Task(@Nullable Activity activity, Result result, AudioRecorderCallable callable, @Nullable AudioRecorderUtil audioRecorderUtil){
+
             this.result = new MethodResultWrapper(result);
             this.callable = callable;
             this.activity = activity;
@@ -32,7 +31,7 @@ public class SoundManagerPluginUtils {
         }
 
         private Object invoke(AudioRecorderCallable callable) throws Exception {
-          return callable.call(context,activity, audioRecorderUtil);
+          return callable.call(activity, audioRecorderUtil);
         }
 
         protected Void doInBackground(Void... params) {

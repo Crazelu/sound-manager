@@ -82,17 +82,16 @@ public class AudioPlayerUtil {
      *
      * It does nothing if playAudio() is not called first.
      */
-    public void stopAudio()  {
-        try{
-            if(player == null && !isPlaying) return;
+    public void stopAudio() {
+        try {
+            if (player != null && isPlaying) {
+                player.stop();
+                resetPlayer();
+            }
 
-            player.stop();
-            player.release();
-            player = null;
-            isPlaying = false;
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, e.toString());
-            throw  e;
+            throw e;
         }
     }
 
@@ -102,30 +101,44 @@ public class AudioPlayerUtil {
      *
      * It does nothing if playAudio() is not called first.
      */
-    public void seek(int milliseconds)  {
-        try{
-            if(player == null && !isPlaying) return;
+    public void seek(int milliseconds) {
+        try {
+            if (player != null && isPlaying) {
+                player.seekTo(milliseconds);
+            }
 
-            player.seekTo(milliseconds);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, e.toString());
-            throw  e;
+            throw e;
         }
     }
 
     /**
-     * @param shouldLoop
+     * @param shouldLoop sets whether to loop audio or not.
      * Sets the MediaPlayer to be looping if @param shouldLoop = true.
      * Otherwise, sets MediaPlayer to be non-looping.
      */
     public void setLooping(boolean shouldLoop) {
-        try{
-            if(player == null) return;
+        try {
+            if (player != null) {
+                player.setLooping(shouldLoop);
+            }
 
-            player.setLooping(shouldLoop);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, e.toString());
-            throw  e;
+            throw e;
+        }
+    }
+
+    /**
+     * Resets MediaPlayer and releases resources.
+     */
+    public void resetPlayer(){
+        if(player != null){
+            player.reset();
+            player.release();
+            player = null;
+            isPlaying = false;
         }
     }
 

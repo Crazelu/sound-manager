@@ -26,17 +26,17 @@ class SoundManager {
   ///`audioEncoder` -> Audio encoder to be used for recording.
   ///
   ///`audioSource` -> Audio source to be used for the recording.
-  static Future<bool> record({
+  static Future<void> record({
     String? fileName,
     String? directory,
-    OutputFormat outputFormat = OutputFormat.ogg,
+    OutputFormat outputFormat = OutputFormat.three_gpp,
     AudioEncoder audioEncoder = AudioEncoder.amr_nb,
     AudioSource audioSource = AudioSource.mic,
   }) async {
     assert(fileName == null || fileName.isNotEmpty,
         "Can't pass an empty file name");
 
-    return await _channel.invokeMethod(
+    await _channel.invokeMethod(
       "recordAudio",
       {
         "fileName": fileName,
@@ -70,7 +70,7 @@ class SoundManager {
   }
 
   ///Stops the audio recording session and releases resources.
-  static Future<void> saveRecording() async {
+  static Future<String> saveRecording() async {
     return await _channel.invokeMethod("saveRecording");
   }
 
