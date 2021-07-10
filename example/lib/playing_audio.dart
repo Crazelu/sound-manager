@@ -41,7 +41,7 @@ class _PlayingAudioDemoState extends State<PlayingAudioDemo> {
   @override
   void initState() {
     super.initState();
-    // init();
+    init();
   }
 
   @override

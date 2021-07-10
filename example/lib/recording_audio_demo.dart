@@ -18,7 +18,6 @@ class _RecordingAudioDemoAppState extends State<RecordingAudioDemoApp> {
   Future<void> requestPermission() async {
     try {
       await SoundManager.init(record: true);
-      print("Done");
     } catch (e) {
       print(e);
     }
@@ -27,7 +26,7 @@ class _RecordingAudioDemoAppState extends State<RecordingAudioDemoApp> {
   Future<void> recordAudio() async {
     try {
       await SoundManager.record(
-        fileName: "testing2",
+        fileName: "my_recording",
         directory: "/Download",
         outputFormat: OutputFormat.amr_wb,
         audioEncoder: AudioEncoder.amr_wb,
