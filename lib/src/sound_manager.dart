@@ -11,7 +11,7 @@ class SoundManager {
     await _channel.invokeMethod("requestPermission");
   }
 
-  //sound recording
+  //Audio recording
 
   ///Starts recording audio.
   ///
@@ -83,7 +83,7 @@ class SoundManager {
   ///
   ///If you call this method while an audio currently being
   ///played, current audio will be stopped and new audio playback will start.
-  Future<void> play({required String filePath}) async {
+  static Future<void> play({required String filePath}) async {
     return await _channel.invokeMethod(
       "playAudioFile",
       {"filePath": filePath},
@@ -92,22 +92,25 @@ class SoundManager {
 
   ///Pauses an ongoing audio playback.
   ///It does nothing if `play()` is not called first.
-  Future<void> pause() async {
+  static Future<void> pauseAudio() async {
     return await _channel.invokeMethod("pauseAudioPlayback");
   }
 
   ///Resumes audio playback
-  Future<void> resume() async {
+  static Future<void> resumeAudio() async {
     return await _channel.invokeMethod("resumeAudioPlayback");
   }
 
   ///Stops audio player
-  Future<void> stop() async {
+  static Future<void> stopAudio() async {
     return await _channel.invokeMethod("stopPlayingAudio");
   }
 
   ///Seeks to `milliseconds` which is the offset in milliseconds from start of the audio playback.
-  Future<void> seekTo(int milliseconds) async {
+  ///
+  ///It does nothing for https/rstp streams as the player
+  ///has no way of estimating the duration.
+  static Future<void> seekTo(int milliseconds) async {
     assert(milliseconds > 0,
         "Seeking must be done to a positive chunk of time in milliseconds");
 
@@ -119,7 +122,7 @@ class SoundManager {
 
   ///Sets the audio player to be looping if `looping = true`.
   ///Otherwise, sets audio player to be non-looping.
-  Future<void> loop({bool looping = true}) async {
+  static Future<void> loop({bool looping = true}) async {
     return await _channel.invokeMethod(
       "setLooping",
       {"looping": looping},
