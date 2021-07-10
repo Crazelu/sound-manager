@@ -17,7 +17,7 @@ class _RecordingAudioDemoAppState extends State<RecordingAudioDemoApp> {
 
   Future<void> requestPermission() async {
     try {
-      await SoundManager.init();
+      await SoundManager.init(record: true);
       print("Done");
     } catch (e) {
       print(e);

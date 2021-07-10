@@ -25,16 +25,22 @@ public class AudioRecorderUtil {
      * @param activity
      * Requests permission to record audio.
      */
-    public void handlePermissionTask(Activity activity){
-        if(!doesAppHavePermission(activity)){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    public void handlePermissionTask(Activity activity, boolean record){
+        if(!doesAppHavePermission(activity, record)){
 
+            if(record){
                 ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.RECORD_AUDIO,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                 Manifest.permission.READ_EXTERNAL_STORAGE},
                         PackageManager.PERMISSION_GRANTED);
             }
+            else{
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        PackageManager.PERMISSION_GRANTED);
+            }
+
         }
     }
 
@@ -43,10 +49,17 @@ public class AudioRecorderUtil {
      * @return true if Manifest.permission.RECORD_AUDIO is granted
      * otherwise, false.
      */
-    public boolean doesAppHavePermission(Activity activity) {
+    public boolean doesAppHavePermission(Activity activity, boolean record) {
         try{
-            int audioRecordingPermissionPermissionStatus = ActivityCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO);
-            return audioRecordingPermissionPermissionStatus == PackageManager.PERMISSION_GRANTED;
+            if(record){
+                int audioRecordingPermissionPermissionStatus = ActivityCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO);
+                return audioRecordingPermissionPermissionStatus == PackageManager.PERMISSION_GRANTED;
+            }
+            else{
+                int result = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+                return result == PackageManager.PERMISSION_GRANTED;
+            }
+
         }catch(Exception e){
             Log.d(TAG, e.toString());
             return false;

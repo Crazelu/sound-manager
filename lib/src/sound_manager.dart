@@ -6,9 +6,15 @@ class SoundManager {
   static const MethodChannel _channel =
       const MethodChannel("tech.devcrazelu.sound_manager");
 
-  ///Requests permissions to record audio on Android
-  static Future<void> init() async {
-    await _channel.invokeMethod("requestPermission");
+  ///Requests permissions to record audio on Android.
+  ///
+  ///Set `record` to true if you want to request permission for recording audio.
+  ///Otherwise, call without parameter.
+  static Future<void> init({bool record = false}) async {
+    await _channel.invokeMethod(
+      "requestPermission",
+      {"record": record},
+    );
   }
 
   //Audio recording

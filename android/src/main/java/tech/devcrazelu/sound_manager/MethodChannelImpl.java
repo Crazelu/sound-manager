@@ -68,7 +68,8 @@ public class MethodChannelImpl implements MethodCallHandler, PluginRegistry.Requ
         switch (call.method) {
 
             case REQUEST_PERMISSION:
-                audioRecorderUtil.handlePermissionTask(activity);
+                boolean record = call.argument("record");
+                audioRecorderUtil.handlePermissionTask(activity, record);
                 break;
 
             case RECORD_AUDIO:
