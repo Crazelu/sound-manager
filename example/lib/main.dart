@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sound_manager_example/playing_audio.dart';
 
+import 'recording_audio_demo.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
           )),
-      home: PlayingAudioDemo(),
+      home: RecordingAudioDemoApp(),
     );
   }
 }

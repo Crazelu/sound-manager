@@ -26,6 +26,8 @@ class SoundManager {
   ///
   ///`directory` -> Directory to save the file produced during the recording.
   ///On Android, it defaults to `Environment.getExternalStorageDirectory()`.
+  ///Available only on Android.
+  ///Default directory on iOS is the app's sandboxed documents directory.
   ///
   ///`outputFormat` -> Output format of the file produced during the recording on Android.
   ///It also specifies the extension of the resulting audio file.

@@ -5,8 +5,8 @@
 //  Created by Crazelu on 7/11/21.
 //
 
-import Foundation
 import AVFoundation
+import Flutter
 
 public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
     
@@ -14,7 +14,9 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
     private var recorder: AVAudioRecorder?
     private var audioFileName: String!
     
-    private func setUpRecorder(audioFormat: AudioFormatID?, bitRate: Int, samplingRate: Float, url: URL){
+    private func setUpRecorder(audioFormat: AudioFormatID?, bitRate: Int, samplingRate: Float, url: URL) -> Bool{
+        
+        var isRecoderSet = false
         
         let settings = [
             AVFormatIDKey: audioFormat == nil ? kAudioFormatAppleLossless : audioFormat!,
@@ -27,56 +29,53 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
         do{
             recorder = try AVAudioRecorder(url: url, settings: settings )
             recorder?.delegate = self
+            isRecoderSet = true
         }catch {
-        //do something with error
+            //do something with error
             print("Error encountered while setting up recorder")
             finishRecording()
         }
-
+        return isRecoderSet
+        
     }
     
-   private func getTimeInMilliseconds() -> Int{
-
-    let formatter = DateFormatter()
-
-    formatter.dateStyle = .long
-    formatter.timeStyle = .medium
-    formatter.timeZone = TimeZone.current
-
-    let current = formatter.date(from: formatter.string(from: Date()))
-
-    return Int(current!.timeIntervalSince1970)
-
+    private func getTimeInMilliseconds() -> Int{
+        
+        let formatter = DateFormatter()
+        
+        formatter.dateStyle = .long
+        formatter.timeStyle = .medium
+        formatter.timeZone = TimeZone.current
+        
+        let current = formatter.date(from: formatter.string(from: Date()))
+        
+        return Int(current!.timeIntervalSince1970)
+        
     }
     
-    private func getFileUrl(fileName: String?, directory: String?) -> URL {
+    private func getFileUrl(fileName: String?) -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentPath = paths[0]
         var audioFilePath = ""
         
-        if let dir = directory{
-            audioFilePath += dir
-        }
-        
         if let file = fileName{
-            audioFilePath += "/\(file)"
+            audioFilePath += file
         }else{
             audioFilePath += "VN_\(getTimeInMilliseconds())"
         }
         
-        audioFilePath += ".m4a"
+        let url: URL = documentPath.appendingPathComponent(audioFilePath + ".m4a")
+        audioFileName = url.absoluteString
         
-        
-        
-        return documentPath.appendingPathComponent(audioFilePath)
+        return url
     }
     
     private func getAudioFormat(format: Int?) -> AudioFormatID{
         switch format {
         case 1:
-            return kAudioFormatAMR
-        case 2:
             return kAudioFormatFLAC
+        case 2:
+            return kAudioFormatAMR
         case 3:
             return kAudioFormatOpus
         case 4:
@@ -99,13 +98,13 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
     }
     
     public func requestPermission() -> Bool{
-        var granted:Bool = false;
+        var granted: Bool = false;
         // Asking user permission for accessing Microphone
         AVAudioSession.sharedInstance().requestRecordPermission () {
             allowed in
             if allowed {
                 // Microphone allowed
-              print("Allowed")
+                print("Allowed")
                 granted = true
             } else {
                 // User denied microphone.
@@ -119,44 +118,86 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
         recorder?.stop()
         recorder = nil
         isRecording = false
+        audioFileName = ""
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch  {
+            print("Error setting AVAudioSession as unactive")
+        }
+       
     }
     
-    public func recordAudio(fileName: String?, directory: String?, audioFormat: Int?, bitRate: Int, samplingRate: Float, result: @escaping FlutterResult){
+    public func recordAudio(fileName: String?, audioFormat: Int?, bitRate: Int, samplingRate: Float, result: @escaping FlutterResult){
         
-        if !isRecording{
+        finishRecording()
+        
+        do {
             
-            setUpRecorder(audioFormat: getAudioFormat(format: audioFormat), bitRate: bitRate, samplingRate: samplingRate, url: getFileUrl(fileName: fileName, directory: directory))
+            let options: AVAudioSession.CategoryOptions = [.defaultToSpeaker, .allowBluetooth]
             
-            recorder?.record()
-            isRecording = true
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord, options: options)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            if !isRecording{
+                
+              if  setUpRecorder(audioFormat: getAudioFormat(format: audioFormat), bitRate: bitRate, samplingRate: samplingRate, url: getFileUrl(fileName: fileName))
+              {
+                recorder?.record()
+                isRecording = true
+                print("Started recording")
+                result(nil)
+              }
+              
+            }
+            
+            result(FlutterError(code: "-1", message: "Couldn't start audio recording", details: nil))
+            
            
+        } catch  {
+            result(FlutterError(code: "-2", message: "Couldn't start audio recording", details: nil))
         }
         
-        result(nil)
+        
     }
     
     public func pauseRecording(result: @escaping FlutterResult){
         
         if isRecording{
             recorder?.pause()
-            result(nil)
+            print("Paused recording")
         }
+        result(nil)
+    }
+    
+    public func resumeRecording(result: @escaping FlutterResult){
+        
+        if isRecording{
+            recorder?.record()
+            print("Resumed recording")
+        }
+        result(nil)
     }
     
     public func cancelRecording(result: @escaping FlutterResult){
-        
+        var deleted: Bool = false;
         if isRecording{
-            recorder?.deleteRecording()
-            result(nil)
+            recorder?.stop()
+            deleted = recorder!.deleteRecording()
+            finishRecording()
+            print("Cancelled recording")
         }
+        result(deleted)
     }
     
-    public func stopRecording(result: @escaping FlutterResult){
+    public func saveRecording(result: @escaping FlutterResult){
         
         if isRecording{
-           finishRecording()
-            result(nil)
+            let savedFile = audioFileName
+            finishRecording()
+            print("Saved recording")
+            result(savedFile)
         }
+        result("")
     }
     
 }

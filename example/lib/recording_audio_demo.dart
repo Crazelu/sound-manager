@@ -26,10 +26,11 @@ class _RecordingAudioDemoAppState extends State<RecordingAudioDemoApp> {
   Future<void> recordAudio() async {
     try {
       await SoundManager.record(
-        fileName: "my_recording",
-        directory: "/Download",
+        fileName: "sept",
+        directory: "Download",
         outputFormat: OutputFormat.amr_wb,
         audioEncoder: AudioEncoder.amr_wb,
+        bitRate: 128000,
       );
     } catch (e) {
       print(e);
