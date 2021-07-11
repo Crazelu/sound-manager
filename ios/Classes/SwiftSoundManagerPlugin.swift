@@ -3,7 +3,8 @@ import UIKit
 
 public class SwiftSoundManagerPlugin: NSObject, FlutterPlugin {
     
-    var audioRecorderUtil: AudioRecorderUtil?;
+    var audioRecorderUtil: AudioRecorderUtil?
+    var audioPlayerUtil: AudioPlayerUtil?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "tech.devcrazelu.sound_manager", binaryMessenger: registrar.messenger())
@@ -11,10 +12,28 @@ public class SwiftSoundManagerPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
-    func setUpUtils(){
+   private func setUpUtils(){
         if audioRecorderUtil == nil{
             audioRecorderUtil = AudioRecorderUtil()
         }
+        if audioPlayerUtil == nil{
+            audioPlayerUtil = AudioPlayerUtil()
+        }
+    }
+    
+    private func releaseResources(){
+        audioPlayerUtil?.finishPlaying()
+        audioRecorderUtil?.finishRecording()
+        audioRecorderUtil = nil
+        audioPlayerUtil = nil
+    }
+    
+    public func applicationWillTerminate(_ application: UIApplication) {
+        releaseResources()
+    }
+    
+    public func applicationDidEnterBackground(_ application: UIApplication) {
+        releaseResources()
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -50,6 +69,23 @@ public class SwiftSoundManagerPlugin: NSObject, FlutterPlugin {
             
         case "saveRecording":
             audioRecorderUtil?.saveRecording(result: result)
+            
+        case "playAudioFile":
+            let args = call.arguments as! [String: String]
+            audioPlayerUtil?.play(url: args["filePath"]!, result: result)
+            
+        case "pauseAudioPlayback":
+            audioPlayerUtil?.pause(result: result)
+            
+        case "resumeAudioPlayback":
+            audioPlayerUtil?.resume(result: result)
+            
+        case "stopPlayingAudio":
+            audioPlayerUtil?.stop(result: result)
+            
+        case "setLooping":
+            let args = call.arguments as! [String: Bool]
+            audioPlayerUtil?.loop(shouldLoop: args["looping"] ?? false, result: result)
             
         default:
             result(FlutterMethodNotImplemented)

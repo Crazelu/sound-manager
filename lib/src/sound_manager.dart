@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:sound_manager/src/utils/utils.dart';
 
@@ -131,18 +132,22 @@ class SoundManager {
   ///
   ///It does nothing for https/rstp streams as the player
   ///has no way of estimating the duration.
+  ///Available only on Android.
   static Future<void> seekTo(int milliseconds) async {
-    assert(milliseconds > 0,
-        "Seeking must be done to a positive chunk of time in milliseconds");
+    if (Platform.isAndroid) {
+      assert(milliseconds > 0,
+          "Seeking must be done to a positive chunk of time in milliseconds");
 
-    return await _channel.invokeMethod(
-      "seekTo",
-      {"milliSeconds": milliseconds},
-    );
+      return await _channel.invokeMethod(
+        "seekTo",
+        {"milliSeconds": milliseconds},
+      );
+    }
   }
 
   ///Sets the audio player to be looping if `looping = true`.
   ///Otherwise, sets audio player to be non-looping.
+  ///Available only on Android.
   static Future<void> loop({bool looping = true}) async {
     return await _channel.invokeMethod(
       "setLooping",

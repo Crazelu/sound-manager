@@ -72,35 +72,42 @@ class _RecordingAudioDemoAppState extends State<RecordingAudioDemoApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Plugin example app'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextButton(
-              onPressed: () => recordAudio(), child: Text("Start recording")),
-          SizedBox(height: 20),
-          TextButton(
-              onPressed: () => pauseRecording(),
-              child: Text("Pause recording")),
-          SizedBox(height: 20),
-          TextButton(
-              onPressed: () => resume(), child: Text("Resume recording")),
-          SizedBox(height: 20),
-          TextButton(
-              onPressed: () => saveRecording(), child: Text("Save recording")),
-          SizedBox(height: 20),
-          TextButton(
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith(
-                      (states) => Colors.red)),
-              onPressed: () => cancelRecording(),
-              child: Text("Cancel recording")),
-          SizedBox(height: 20),
-        ],
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.of(context).pop();
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextButton(
+                onPressed: () => recordAudio(), child: Text("Start recording")),
+            SizedBox(height: 20),
+            TextButton(
+                onPressed: () => pauseRecording(),
+                child: Text("Pause recording")),
+            SizedBox(height: 20),
+            TextButton(
+                onPressed: () => resume(), child: Text("Resume recording")),
+            SizedBox(height: 20),
+            TextButton(
+                onPressed: () => saveRecording(),
+                child: Text("Save recording")),
+            SizedBox(height: 20),
+            TextButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith(
+                        (states) => Colors.red)),
+                onPressed: () => cancelRecording(),
+                child: Text("Cancel recording")),
+            SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

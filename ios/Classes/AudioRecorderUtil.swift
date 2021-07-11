@@ -65,6 +65,9 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
         }
         
         let url: URL = documentPath.appendingPathComponent(audioFilePath + ".m4a")
+        
+        print(url.path)
+        
         audioFileName = url.absoluteString
         
         return url
@@ -114,7 +117,7 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
         return granted
     }
     
-    private func finishRecording(){
+    public func finishRecording(){
         recorder?.stop()
         recorder = nil
         isRecording = false
@@ -122,7 +125,7 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
         do {
             try AVAudioSession.sharedInstance().setActive(false)
         } catch  {
-            print("Error setting AVAudioSession as unactive")
+            print("Error setting AVAudioSession as inactive")
         }
        
     }

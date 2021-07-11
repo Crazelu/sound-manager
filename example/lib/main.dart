@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sound_manager_example/playing_audio.dart';
 
@@ -28,7 +29,43 @@ class MyApp extends StatelessWidget {
               ),
             ),
           )),
-      home: RecordingAudioDemoApp(),
+      home: Demo(),
+    );
+  }
+}
+
+class Demo extends StatelessWidget {
+  const Demo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Sound Manager Plugin Example"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(CupertinoPageRoute(
+                    builder: (_) => RecordingAudioDemoApp()));
+              },
+              child: Text("Recording Audio Demo"),
+            ),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    CupertinoPageRoute(builder: (_) => PlayingAudioDemo()));
+              },
+              child: Text("Playing Audio Demo"),
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+      ),
     );
   }
 }
