@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - sound_manager (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - sound_manager (from `.symlinks/plugins/sound_manager/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  sound_manager:
+    :path: ".symlinks/plugins/sound_manager/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  sound_manager: 95760d4e04e65c5e9da7192e4ffdfa8df362e1be
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1
