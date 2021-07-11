@@ -1,6 +1,6 @@
-///Represents the output format for encoding an audio recording
+///Represents the output format for encoding an audio recording on Android
 ///
-///Defaults to [OutputFormat.three_gpp]
+///Defaults to `OutputFormat.three_gpp`
 ///
 ///aac -> AAC ADTS file format
 ///

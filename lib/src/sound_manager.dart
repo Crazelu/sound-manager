@@ -27,17 +27,27 @@ class SoundManager {
   ///`directory` -> Directory to save the file produced during the recording.
   ///On Android, it defaults to `Environment.getExternalStorageDirectory()`.
   ///
-  ///`outputFormat` -> Output format of the file produced during the recording.
+  ///`outputFormat` -> Output format of the file produced during the recording on Android.
+  ///It also specifies the extension of the resulting audio file.
   ///
   ///`audioEncoder` -> Audio encoder to be used for recording.
   ///
   ///`audioSource` -> Audio source to be used for the recording.
+  ///
+  ///`audioFormat` -> Audio format to be used for the recording on iOS.
+  ///
+  ///`samplingRate` -> Sampling rate to be used for recording.
+  ///
+  ///`bitRate` -> Bitrate to be used for recording.
   static Future<void> record({
     String? fileName,
     String? directory,
     OutputFormat outputFormat = OutputFormat.three_gpp,
+    AudioFormat audioFormat = AudioFormat.appleLossless,
     AudioEncoder audioEncoder = AudioEncoder.amr_nb,
     AudioSource audioSource = AudioSource.mic,
+    double? samplingRate,
+    int? bitRate,
   }) async {
     assert(fileName == null || fileName.isNotEmpty,
         "Can't pass an empty file name");
@@ -50,6 +60,9 @@ class SoundManager {
         "outputFormat": outputFormatEnumToInt(outputFormat),
         "audioEncoder": audioEncoderEnumToInt(audioEncoder),
         "audioSource": audioSourceEnumToInt(audioSource),
+        "audioFormat": audioFormatEnumToInt(audioFormat),
+        "samplingRate": samplingRate,
+        "bitRate": bitRate,
       },
     );
   }

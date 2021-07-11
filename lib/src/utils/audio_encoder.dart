@@ -1,6 +1,6 @@
 ///Audio encoder for audio recording
 ///
-///Defaults to [AudioEncoder.amr_nb]
+///Defaults to `AudioEncoder.amr_nb`
 ///
 ///aac -> AAC Low Complexity (AAC-LC) audio codec
 ///

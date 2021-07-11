@@ -75,6 +75,24 @@ public class AudioRecorderUtil: NSObject, AVAudioRecorderDelegate{
         switch format {
         case 1:
             return kAudioFormatAMR
+        case 2:
+            return kAudioFormatFLAC
+        case 3:
+            return kAudioFormatOpus
+        case 4:
+            return kAudioFormatAudible
+        case 5:
+            return kAudioFormatiLBC
+        case 6:
+            return kAudioFormatQUALCOMM
+        case 7:
+            return kAudioFormatAC3
+        case 8:
+            return kAudioFormatAES3
+        case 9:
+            return kAudioFormatAMR_WB
+        case 10:
+            return kAudioFormatMPEG4AAC
         default:
             return kAudioFormatAppleLossless
         }

@@ -33,7 +33,7 @@ public class SwiftSoundManagerPlugin: NSObject, FlutterPlugin {
             fileName: args["fileName"] as? String,
             directory: args["directory"] as? String,
             audioFormat: args["audioFormat"] as? Int,
-            bitRate: args["audioFormat"] as? Int ?? 320000,
+            bitRate: args["bitRate"] as? Int ?? 320000,
             samplingRate: args["samplingRate"] as? Float ?? 41000.0,
             result: result
         )
