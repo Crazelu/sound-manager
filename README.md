@@ -4,12 +4,18 @@ A Flutter plugin for recording and playing audio files on Android and iOS
 
 ## Install
 
-Import the package in your project:
+In the pubspec.yaml of your flutter project, add the following dependency:
 
 ```yaml
   git:
       url: https://github.com/Crazelu/sound-manager.git
   ```
+  
+Import the package in your project:
+
+```dart
+   import 'package:sound_manager/sound_manager.dart';
+```
   
 ## Usage
 
